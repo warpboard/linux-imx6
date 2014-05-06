@@ -92,6 +92,9 @@ obj-$(CONFIG_MFD_WL1273_CORE)	+= wl1273-core.o
 obj-$(CONFIG_MFD_MXC_HDMI)       += mxc-hdmi-core.o
 obj-$(CONFIG_MFD_CS5535)	+= cs5535-mfd.o
 obj-$(CONFIG_MFD_MAX17135)  += max17135-core.o
+max77696-io-objs		:= max77696-i2c.o
+obj-$(CONFIG_MFD_MAX77696)	+= max77696-core.o max77696-irq.o max77696-io.o
+obj-$(CONFIG_MFD_MAX77696)	+= max77696-topsys.o
 
 #ifeq ($(CONFIG_PMIC_DIALOG),y)
 da9052-objs			:= da9052-spi.o da9052-i2c.o da9052-core.o
