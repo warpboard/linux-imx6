@@ -4,6 +4,9 @@
  * Copyright (C) 2009 by Jan Weitzel Phytec Messtechnik GmbH,
  *                       <armlinux@phytec.de>
  *
+ * Copyright (C) 2014 Revolution Robotics, Inc.
+ * Adaptations for WaRP board: Jacob Postman
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -42,6 +45,13 @@ int mxc_iomux_v3_setup_pad(iomux_v3_cfg_t pad)
 	u32 sel_input = (pad & MUX_SEL_INPUT_MASK) >> MUX_SEL_INPUT_SHIFT;
 	u32 pad_ctrl_ofs = (pad & MUX_PAD_CTRL_OFS_MASK) >> MUX_PAD_CTRL_OFS_SHIFT;
 	u32 pad_ctrl = (pad & MUX_PAD_CTRL_MASK) >> MUX_PAD_CTRL_SHIFT;
+
+// REVO - probably will need to add #if defined here before
+    	/* Check whether LVE bit needs to be set */
+	if (pad_ctrl & PAD_CTL_LVE) {
+        	pad_ctrl &= ~PAD_CTL_LVE;
+		pad_ctrl |= PAD_CTL_LVE_BIT;
+	}
 
 	if (mux_ctrl_ofs)
 		__raw_writel(mux_mode, base + mux_ctrl_ofs);

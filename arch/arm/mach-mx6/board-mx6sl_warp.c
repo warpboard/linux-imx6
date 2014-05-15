@@ -4,6 +4,9 @@
  * Copyright (C) 2014 Kynetics, LLC
  * Adaptations for WaRP board: Nicola La Gloria
  *
+ * Copyright (C) 2014 Revolution Robotics, Inc.
+ * Adaptations for WaRP board: Jacob Postman
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -1268,7 +1271,7 @@ static void __init mx6_evk_init_usb(void)
 	 * or it will affect signal quality at dp.
 	 */
 
-	ret = gpio_request(MX6_BRD_USBOTG1_PWR, "usbotg-pwr");
+	/*ret = gpio_request(MX6_BRD_USBOTG1_PWR, "usbotg-pwr");
 	if (ret) {
 		pr_err("failed to get GPIO MX6_BRD_USBOTG1_PWR:%d\n", ret);
 		return;
@@ -1284,7 +1287,7 @@ static void __init mx6_evk_init_usb(void)
 
 	mx6_set_otghost_vbus_func(imx6_evk_usbotg_vbus);
 	mx6_set_host1_vbus_func(imx6_evk_usbh1_vbus);
-
+*/
 #ifdef CONFIG_USB_EHCI_ARC_HSIC
 	mx6_usb_h2_init();
 #endif
@@ -1522,17 +1525,17 @@ static void __init mx6_evk_init(void)
 	mxc_iomux_v3_setup_multiple_pads(mx6sl_brd_pads,
 					ARRAY_SIZE(mx6sl_brd_pads));
 
-	elan_ts_init();
+//	elan_ts_init(); // REVO - removed
 
-	gp_reg_id = mx6sl_evk_dvfscore_data.reg_id;
-	soc_reg_id = mx6sl_evk_dvfscore_data.soc_id;
+//	gp_reg_id = mx6sl_evk_dvfscore_data.reg_id;
+//	soc_reg_id = mx6sl_evk_dvfscore_data.soc_id;
 
-	imx6q_add_imx_snvs_rtc();
+//	imx6q_add_imx_snvs_rtc();
 
-	imx6q_add_imx_i2c(0, &mx6_evk_i2c0_data);
-	imx6q_add_imx_i2c(1, &mx6_evk_i2c1_data);
-	i2c_register_board_info(0, mxc_i2c0_board_info,
-			ARRAY_SIZE(mxc_i2c0_board_info));
+//	imx6q_add_imx_i2c(0, &mx6_evk_i2c0_data);
+//	imx6q_add_imx_i2c(1, &mx6_evk_i2c1_data);
+//	i2c_register_board_info(0, mxc_i2c0_board_info,
+//			ARRAY_SIZE(mxc_i2c0_board_info));
 
 	/*  setting sii902x address when hdmi enabled */
 	if (hdmi_enabled) {
@@ -1555,31 +1558,29 @@ static void __init mx6_evk_init(void)
 	}
 
 	/* SPI */
-	imx6q_add_ecspi(0, &mx6_evk_spi_data);
-	spi_device_init();
+//	imx6q_add_ecspi(0, &mx6_evk_spi_data);
+//	spi_device_init();
 
-	mx6sl_evk_init_pfuze100(0);
+//	mx6sl_evk_init_pfuze100(0);
 
-	imx6q_add_anatop_thermal_imx(1, &mx6sl_anatop_thermal_data);
+//	imx6q_add_anatop_thermal_imx(1, &mx6sl_anatop_thermal_data);
 
 	mx6_evk_init_uart();
 	/* get enet tx reference clk from FEC_REF_CLK pad.
 	 * GPR1[14] = 0, GPR1[18:17] = 00
 	 */
-	mxc_iomux_set_gpr_register(1, 14, 1, 0);
-	mxc_iomux_set_gpr_register(1, 17, 2, 0);
+//	mxc_iomux_set_gpr_register(1, 14, 1, 0);
+//	mxc_iomux_set_gpr_register(1, 17, 2, 0);
 
 	platform_device_register(&evk_vmmc_reg_devices);
 	imx6q_add_sdhci_usdhc_imx(1, &mx6_evk_sd2_data);
-	imx6q_add_sdhci_usdhc_imx(0, &mx6_evk_sd1_data);
-	imx6q_add_sdhci_usdhc_imx(2, &mx6_evk_sd3_data);
 
 	mx6_evk_init_usb();
-	imx6q_add_otp();
-	imx6q_add_mxc_pwm(0);
-	imx6q_add_mxc_pwm_backlight(0, &mx6_evk_pwm_backlight_data);
+//	imx6q_add_otp();
+//	imx6q_add_mxc_pwm(0);
+//	imx6q_add_mxc_pwm_backlight(0, &mx6_evk_pwm_backlight_data);
 
-	if (hdmi_enabled) {
+/*	if (hdmi_enabled) {
 		imx6dl_add_imx_elcdif(&hdmi_fb_data[0]);
 	} else {
 		imx6dl_add_imx_elcdif(&wvga_fb_data[0]);
@@ -1587,11 +1588,11 @@ static void __init mx6_evk_init(void)
 		gpio_request(MX6_BRD_LCD_PWR_EN, "elcdif-power-on");
 		gpio_direction_output(MX6_BRD_LCD_PWR_EN, 1);
 		mxc_register_device(&lcd_wvga_device, NULL);
-	}
+	}*/
 
-	imx6dl_add_imx_pxp();
-	imx6dl_add_imx_pxp_client();
-	mxc_register_device(&max17135_sensor_device, NULL);
+//	imx6dl_add_imx_pxp();
+//	imx6dl_add_imx_pxp_client();
+//	mxc_register_device(&max17135_sensor_device, NULL);
 	setup_spdc();
 	if (csi_enabled) {
 		imx6sl_add_fsl_csi();
@@ -1601,44 +1602,45 @@ static void __init mx6_evk_init(void)
 		else
 			imx6sl_add_imx_spdc(&spdc_data);
 	}
-	imx6q_add_dvfs_core(&mx6sl_evk_dvfscore_data);
+//	imx6q_add_dvfs_core(&mx6sl_evk_dvfscore_data);
 
 	imx6q_init_audio();
 
 	/* uart2 for bluetooth */
 #ifdef SXSDMAN_BLUETOOTH_ENABLE
 	if (uart4_enabled)
-		uart4_init();
+//		uart4_init();
 #else
 	if (uart2_enabled)
-		uart2_init();
+//		uart2_init();
 #endif
 
-	mxc_register_device(&mxc_bt_rfkill, &mxc_bt_rfkill_data);
+//	mxc_register_device(&mxc_bt_rfkill, &mxc_bt_rfkill_data);
 
-	imx6q_add_viim();
-	imx6q_add_imx2_wdt(0, NULL);
+//	imx6q_add_viim();
+//	imx6q_add_imx2_wdt(0, NULL);
 
-	imx_add_viv_gpu(&imx6_gpu_data, &imx6q_gpu_pdata);
-	imx6sl_add_imx_keypad(&mx6sl_evk_map_data);
-	imx6q_add_busfreq();
-	imx6sl_add_dcp();
-	imx6sl_add_rngb();
-	imx6sl_add_imx_pxp_v4l2();
+//	imx_add_viv_gpu(&imx6_gpu_data, &imx6q_gpu_pdata);
+//	imx6sl_add_imx_keypad(&mx6sl_evk_map_data);
+//	imx6q_add_busfreq();
+//	imx6sl_add_dcp();
+//	imx6sl_add_rngb();
+//	imx6sl_add_imx_pxp_v4l2();
 
-	mxc_spdif_data.spdif_core_clk = clk_get_sys("mxc_spdif.0", NULL);
-	clk_put(mxc_spdif_data.spdif_core_clk);
-	imx6q_add_spdif(&mxc_spdif_data);
-	imx6q_add_spdif_dai();
-	imx6q_add_spdif_audio_device();
+//	mxc_spdif_data.spdif_core_clk = clk_get_sys("mxc_spdif.0", NULL);
+//	clk_put(mxc_spdif_data.spdif_core_clk);
+//	imx6q_add_spdif(&mxc_spdif_data);
+//	imx6q_add_spdif_dai();
+//	imx6q_add_spdif_audio_device();
 
 	imx6q_add_perfmon(0);
 	imx6q_add_perfmon(1);
 	imx6q_add_perfmon(2);
 	/* Register charger chips */
-	platform_device_register(&evk_max8903_charger_1);
-	pm_power_off = mx6_snvs_poweroff;
-	imx6q_add_pm_imx(0, &mx6sl_evk_pm_data);
+
+//	platform_device_register(&evk_max8903_charger_1);
+//	pm_power_off = mx6_snvs_poweroff;
+//	imx6q_add_pm_imx(0, &mx6sl_evk_pm_data);
 
 	if (imx_ion_data.heaps[0].size)
 		platform_device_register_resndata(NULL, "ion-mxc", 0, NULL, 0, \

@@ -4,6 +4,9 @@
  *
  * Copyright (C) 2012 Freescale Semiconductor, Inc.
  *
+ * Copyright (C) 2014 Revolution Robotics, Inc.
+ * Adaptations for WaRP board: Jacob Postman
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -90,8 +93,12 @@ typedef u64 iomux_v3_cfg_t;
 #define NO_PAD_CTRL			(1 << 17)
 #define NO_PAD_I			0
 #define NO_MUX_I			0
+
+#define PAD_CTL_LVE			(1 << 1)
+#define PAD_CTL_LVE_BIT			(1 << 22)
+
 #ifdef CONFIG_SOC_IMX6Q
-#define PAD_CTL_LVE			(1 << 22)
+//#define PAD_CTL_LVE			(1 << 22)
 #define PAD_CTL_LVE_MASK		(1 << 22)
 #define PAD_CTL_DDR_SEL_LPDDR2		(2 << 18)
 #define PAD_CTL_DDR_SEL_DDR3		(3 << 18)

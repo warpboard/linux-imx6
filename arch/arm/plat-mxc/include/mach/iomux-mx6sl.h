@@ -1,6 +1,9 @@
 /*
  * Copyright (C) 2012 Freescale Semiconductor, Inc. All Rights Reserved.
  *
+ * Copyright (C) 2014 Revolution Robotics, Inc.
+ * Adaptations for WaRP board: Jacob Postman
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -30,13 +33,13 @@
 #define MX6SL_CCM_CLKO_PAD_CTRL (PAD_CTL_PKE | PAD_CTL_PUE |		\
 		PAD_CTL_PUS_47K_UP  | PAD_CTL_SPEED_LOW |		\
 		PAD_CTL_DSE_80ohm   | PAD_CTL_SRE_FAST  | PAD_CTL_HYS)
-
-#define MX6SL_UART_PAD_CTRL (PAD_CTL_PKE | PAD_CTL_PUE  |		\
+// REVO - enabled LVE bit
+#define MX6SL_UART_PAD_CTRL (PAD_CTL_LVE | PAD_CTL_PKE | PAD_CTL_PUE  |		\
 		PAD_CTL_PUS_100K_UP | PAD_CTL_SPEED_MED |		\
 		PAD_CTL_DSE_40ohm   | PAD_CTL_SRE_FAST  | PAD_CTL_HYS)
-
-#define MX6SL_USDHC_PAD_CTRL (PAD_CTL_PKE | PAD_CTL_PUE |		\
-		PAD_CTL_PUS_22K_UP  | PAD_CTL_SPEED_LOW |		\
+// REVO - added
+#define MX6SL_USDHC_PAD_CTRL (PAD_CTL_LVE | PAD_CTL_PKE | PAD_CTL_PUE |		\
+		PAD_CTL_PUS_47K_UP  | PAD_CTL_SPEED_LOW |		\
 		PAD_CTL_DSE_40ohm   | PAD_CTL_SRE_FAST | PAD_CTL_HYS)
 
 #define MX6SL_USDHC_PAD_CTRL_100MHZ (PAD_CTL_PKE | PAD_CTL_PUE |	\
