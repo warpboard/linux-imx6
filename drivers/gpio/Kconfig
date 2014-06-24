@@ -461,4 +461,10 @@ config DA9052_GPIO_ENABLE
 	help
 	  Say Y  to enable the GPIO driver for the DA9052 chip
 
+config GPIO_MAX77696
+	bool "MAX77696 GPIO"
+	depends on MFD_MAX77696
+	help
+	  Say Y here to support Maxim MAX77696 GPIO.
+
 endif

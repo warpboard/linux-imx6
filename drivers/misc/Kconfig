@@ -538,6 +538,13 @@ config APANIC_PLABEL
 	 If your platform uses a different flash partition label for storing
  	 crashdumps, enter it here.
 
+config MAX77696_CLK
+	bool "MAX77696 crystal-based oscillator support"
+	depends on MFD_MAX77696
+	help
+	  If you say yes here you get support for MAX77696 32KHz oscillator and
+	  buffered outputs.
+
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
 source "drivers/misc/cb710/Kconfig"

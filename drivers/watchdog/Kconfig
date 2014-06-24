@@ -1257,4 +1257,11 @@ config USBPCWATCHDOG
 
 	  Most people will say N.
 
+config MAX77696_WATCHDOG
+	tristate "MAX77696 watchdog"
+	depends on MFD_MAX77696
+	help
+	  Support for the watchdog in the MAX77696 PMIC. When the watchdog
+	  triggers the system will be reset.
+
 endif # WATCHDOG

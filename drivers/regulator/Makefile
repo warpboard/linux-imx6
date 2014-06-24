@@ -49,5 +49,10 @@ obj-$(CONFIG_REGULATOR_ANATOP) += anatop-regulator.o
 obj-$(CONFIG_REGULATOR_TPS65910) += tps65910-regulator.o
 obj-$(CONFIG_REGULATOR_MAX17135) += max17135-regulator.o
 obj-$(CONFIG_REGULATOR_DA9052)  += da9052-regulator.o
+obj-$(CONFIG_REGULATOR_MAX77696) += max77696-buck.o
+obj-$(CONFIG_REGULATOR_MAX77696) += max77696-ldo.o
+obj-$(CONFIG_REGULATOR_MAX77696) += max77696-lsw.o
+obj-$(CONFIG_REGULATOR_MAX77696) += max77696-epd.o
+obj-$(CONFIG_REGULATOR_MAX77696) += max77696-vddq.o
 
 ccflags-$(CONFIG_REGULATOR_DEBUG) += -DDEBUG
