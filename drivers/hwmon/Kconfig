@@ -1435,4 +1435,14 @@ config SENSORS_MAX77696_ADC
 
 	  This driver must not be built as a module.
 
+config SENSORS_FXOS8700_I2C
+        tristate "Freescale FXOS8700 ACC and MAG combo sensor i2c driver"
+        depends on I2C
+        default n
+
+config SENSORS_FXOS8700_SPI
+        tristate "Freescale FXOS8700 ACC and MAG combo sensor spi driver"
+        depends on SPI
+        default n
+
 endif # HWMON
