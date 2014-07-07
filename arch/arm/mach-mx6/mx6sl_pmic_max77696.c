@@ -357,6 +357,7 @@ static struct max77696_platform_data max77696_pdata = {
     },
 
 #ifdef CONFIG_GPIO_MAX77696
+/* TODO: configure GPIO for SSD2805 settings
     .gpio_pdata = {
         .irq_base  = CONFIG_MFD_MAX77696_IRQ_BASE+MAX77696_GPIO_IRQ_OFFSET,
         .gpio_base = CONFIG_MFD_MAX77696_GPIO_BASE,
@@ -369,6 +370,7 @@ static struct max77696_platform_data max77696_pdata = {
             MAX77696_GPIO_INIT_NC    (4                         ),
         },
     },
+*/
 #endif /* CONFIG_GPIO_MAX77696 */
 
 #ifdef CONFIG_WATCHDOG_MAX77696
@@ -394,12 +396,12 @@ static struct max77696_platform_data max77696_pdata = {
                            --------------------------------------------------------*/
         MAX77696_BUCK_INIT(B1,    "max77696_buck1",     725000, 1300000, 0, 1,     1),
         MAX77696_BUCK_INIT(B1DVS, "max77696_buck1dvs",  600000, 1300000, 0, 0,     0),
-        MAX77696_BUCK_INIT(B2,    "max77696_buck2",     725000, 1300000, 0, 1,     1),
+        MAX77696_BUCK_INIT(B2,    "max77696_buck2",     725000, 1300000, 0, 0,     0),
         MAX77696_BUCK_INIT(B2DVS, "max77696_buck2dvs",  600000, 1300000, 0, 0,     0),
         MAX77696_BUCK_INIT(B3,    "max77696_buck3",     600000, 3387500, 0, 0,     0),
         MAX77696_BUCK_INIT(B4,    "max77696_buck4",    1200000, 1200000, 1, 1,     1),
-        MAX77696_BUCK_INIT(B5,    "max77696_buck5",     600000, 3387500, 0, 0,     0),
-        MAX77696_BUCK_INIT(B6,    "max77696_buck6",     600000, 3387500, 0, 0,     0),
+        MAX77696_BUCK_INIT(B5,    "max77696_buck5",    1800000, 1800000, 0, 0,     1),
+        MAX77696_BUCK_INIT(B6,    "max77696_buck6",    3000000, 3000000, 0, 0,     1),
     },
     .ldo_pdata = {
         .imon_tf = MAX77696_LDO_IMON_TF_1000_OHM,
@@ -410,7 +412,7 @@ static struct max77696_platform_data max77696_pdata = {
         MAX77696_LDO_INIT(L1,  "max77696_ldo1",   800000, 3950000, 0, 0,      0, NULL),
         MAX77696_LDO_INIT(L2,  "max77696_ldo2",   800000, 3950000, 0, 0,      0, NULL),
         MAX77696_LDO_INIT(L3,  "max77696_ldo3",   800000, 3950000, 0, 0,      0, NULL),
-        MAX77696_LDO_INIT(L4,  "max77696_ldo4",   800000, 2375000, 0, 0,      0, NULL),
+        MAX77696_LDO_INIT(L4,  "max77696_ldo4",   1800000, 1800000, 0, 0,      0, NULL),
         MAX77696_LDO_INIT(L5,  "max77696_ldo5",   800000, 2375000, 0, 0,      0, NULL),
         MAX77696_LDO_INIT(L6,  "max77696_ldo6",   800000, 3950000, 0, 0,      0, NULL),
         MAX77696_LDO_INIT(L7,  "max77696_ldo7",   800000, 3950000, 0, 0,      0, NULL),
@@ -621,7 +623,7 @@ static struct max77696_platform_data max77696_pdata = {
         .wakeup_1sec_delayed_since_onkey_down = 0,  /* See EN0DLY in GLBLCNFG1 */
         .wakeup_after_mrwrn                   = 0,
         .wakeup_after_mro                     = 1,  /* See MROWK in GLBLCNFG2 */
-        .manual_reset_time                    = 12, /* in seconds */
+        .manual_reset_time                    = 2, /* in seconds */
         .onkey_keycode                        = KEY_POWER,
         .hold_1sec_keycode                    = KEY_POWER,
         .mr_warn_keycode                      = KEY_POWER,

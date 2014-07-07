@@ -55,6 +55,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/regulator/machine.h>
 #include <linux/regulator/fixed.h>
+#include <linux/mfd/max77696.h>
 #include <sound/wm8962.h>
 #include <sound/pcm.h>
 #include <linux/power/sabresd_battery.h>
@@ -1359,7 +1360,7 @@ static void __init mx6_evk_init(void)
 
 //	imx6q_add_imx_snvs_rtc();
 
-//	imx6q_add_imx_i2c(0, &mx6_evk_i2c0_data);
+	imx6q_add_imx_i2c(0, &mx6_evk_i2c0_data);
 //	imx6q_add_imx_i2c(1, &mx6_evk_i2c1_data);
 //	i2c_register_board_info(0, mxc_i2c0_board_info,
 //			ARRAY_SIZE(mxc_i2c0_board_info));
