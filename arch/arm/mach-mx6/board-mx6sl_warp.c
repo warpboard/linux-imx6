@@ -81,6 +81,7 @@
 #include "crm_regs.h"
 #include "cpu_op-mx6.h"
 #include "board-mx6sl_common.h"
+#include "board-mx6sl_warp.h"
 
 
 static int spdc_sel;
@@ -232,13 +233,37 @@ static int mx6_evk_spi_cs[] = {
 	MX6_BRD_ECSPI1_CS0,
 };
 
+static int mx6_warp_spi_cs[] = {
+	MX6_BRD_ECSPI2_CS0,
+};
+
 static const struct spi_imx_master mx6_evk_spi_data __initconst = {
 	.chipselect     = mx6_evk_spi_cs,
 	.num_chipselect = ARRAY_SIZE(mx6_evk_spi_cs),
 };
 
+static const struct spi_imx_master mx6_warp_spi_data __initconst = {
+	.chipselect     = mx6_warp_spi_cs,
+	.num_chipselect = ARRAY_SIZE(mx6_warp_spi_cs),
+};
+
+#ifdef CONFIG_SENSORS_FXOS8700_SPI
+static struct spi_board_info fxos8700_spi1_board_info[] __initdata = {
+       {       // The modalias must be the same as spi device driver name
+       .modalias       = "fxos8700",
+       .max_speed_hz   = 500000,
+       .bus_num        = 1,
+       .chip_select    = 0,
+       },
+};
+#endif
+
 static void spi_device_init(void)
 {
+#ifdef CONFIG_SENSORS_FXOS8700_SPI
+       spi_register_board_info(fxos8700_spi1_board_info,
+                               ARRAY_SIZE(fxos8700_spi1_board_info));
+#endif
 }
 
 static struct imx_ssi_platform_data mx6_sabresd_ssi_pdata = {
@@ -940,8 +965,8 @@ static void __init mx6_warp_init(void)
 //			ARRAY_SIZE(mxc_i2c0_board_info));
 
 	/* SPI */
-//	imx6q_add_ecspi(0, &mx6_evk_spi_data);
-//	spi_device_init();
+	imx6q_add_ecspi(1, &mx6_warp_spi_data);
+	spi_device_init();
 
 //	imx6q_add_anatop_thermal_imx(1, &mx6sl_anatop_thermal_data);
 
