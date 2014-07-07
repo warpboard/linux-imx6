@@ -55,7 +55,6 @@
 #include <linux/regulator/consumer.h>
 #include <linux/regulator/machine.h>
 #include <linux/regulator/fixed.h>
-#include <linux/mfd/max17135.h>
 #include <sound/wm8962.h>
 #include <sound/pcm.h>
 #include <linux/power/sabresd_battery.h>
@@ -84,7 +83,6 @@
 
 
 static int spdc_sel;
-static int max17135_regulator_init(struct max17135 *max17135);
 static void mx6sl_evk_suspend_enter(void);
 static void mx6sl_evk_suspend_exit(void);
 
@@ -303,179 +301,11 @@ static struct platform_device evk_vmmc_reg_devices = {
 	},
 };
 
-static struct regulator_consumer_supply display_consumers[] = {
-	{
-		/* MAX17135 */
-		.supply = "DISPLAY",
-	},
-};
-
-static struct regulator_consumer_supply vcom_consumers[] = {
-	{
-		/* MAX17135 */
-		.supply = "VCOM",
-	},
-};
-
-static struct regulator_consumer_supply v3p3_consumers[] = {
-	{
-		/* MAX17135 */
-		.supply = "V3P3",
-	},
-};
-
-static struct regulator_init_data max17135_init_data[] = {
-	{
-		.constraints = {
-			.name = "DISPLAY",
-			.valid_ops_mask =  REGULATOR_CHANGE_STATUS,
-		},
-		.num_consumer_supplies = ARRAY_SIZE(display_consumers),
-		.consumer_supplies = display_consumers,
-	}, {
-		.constraints = {
-			.name = "GVDD",
-			.min_uV = V_to_uV(20),
-			.max_uV = V_to_uV(20),
-		},
-	}, {
-		.constraints = {
-			.name = "GVEE",
-			.min_uV = V_to_uV(-22),
-			.max_uV = V_to_uV(-22),
-		},
-	}, {
-		.constraints = {
-			.name = "HVINN",
-			.min_uV = V_to_uV(-22),
-			.max_uV = V_to_uV(-22),
-		},
-	}, {
-		.constraints = {
-			.name = "HVINP",
-			.min_uV = V_to_uV(20),
-			.max_uV = V_to_uV(20),
-		},
-	}, {
-		.constraints = {
-			.name = "VCOM",
-			.min_uV = mV_to_uV(-4325),
-			.max_uV = mV_to_uV(-500),
-			.valid_ops_mask = REGULATOR_CHANGE_VOLTAGE |
-			REGULATOR_CHANGE_STATUS,
-		},
-		.num_consumer_supplies = ARRAY_SIZE(vcom_consumers),
-		.consumer_supplies = vcom_consumers,
-	}, {
-		.constraints = {
-			.name = "VNEG",
-			.min_uV = V_to_uV(-15),
-			.max_uV = V_to_uV(-15),
-		},
-	}, {
-		.constraints = {
-			.name = "VPOS",
-			.min_uV = V_to_uV(15),
-			.max_uV = V_to_uV(15),
-		},
-	}, {
-		.constraints = {
-			.name = "V3P3",
-			.valid_ops_mask =  REGULATOR_CHANGE_STATUS,
-		},
-		.num_consumer_supplies = ARRAY_SIZE(v3p3_consumers),
-		.consumer_supplies = v3p3_consumers,
-	},
-};
 
 static const struct anatop_thermal_platform_data
 	mx6sl_anatop_thermal_data __initconst = {
 			.name = "anatop_thermal",
 	};
-
-static struct platform_device max17135_sensor_device = {
-	.name = "max17135_sensor",
-	.id = 0,
-};
-
-static struct max17135_platform_data max17135_pdata __initdata = {
-	.vneg_pwrup = 1,
-	.gvee_pwrup = 2,
-	.vpos_pwrup = 10,
-	.gvdd_pwrup = 12,
-	.gvdd_pwrdn = 1,
-	.vpos_pwrdn = 2,
-	.gvee_pwrdn = 8,
-	.vneg_pwrdn = 10,
-	.gpio_pmic_pwrgood = MX6SL_BRD_EPDC_PWRSTAT,
-	.gpio_pmic_vcom_ctrl = MX6SL_BRD_EPDC_VCOM,
-	.gpio_pmic_wakeup = MX6SL_BRD_EPDC_PMIC_WAKE,
-	.gpio_pmic_v3p3 = MX6SL_BRD_EPDC_PWRCTRL0,
-	.gpio_pmic_intr = MX6SL_BRD_EPDC_PMIC_INT,
-	.regulator_init = max17135_init_data,
-	.init = max17135_regulator_init,
-};
-
-static int __init max17135_regulator_init(struct max17135 *max17135)
-{
-	struct max17135_platform_data *pdata = &max17135_pdata;
-	int i, ret;
-
-	max17135->gvee_pwrup = pdata->gvee_pwrup;
-	max17135->vneg_pwrup = pdata->vneg_pwrup;
-	max17135->vpos_pwrup = pdata->vpos_pwrup;
-	max17135->gvdd_pwrup = pdata->gvdd_pwrup;
-	max17135->gvdd_pwrdn = pdata->gvdd_pwrdn;
-	max17135->vpos_pwrdn = pdata->vpos_pwrdn;
-	max17135->vneg_pwrdn = pdata->vneg_pwrdn;
-	max17135->gvee_pwrdn = pdata->gvee_pwrdn;
-
-	max17135->max_wait = pdata->vpos_pwrup + pdata->vneg_pwrup +
-		pdata->gvdd_pwrup + pdata->gvee_pwrup;
-
-	max17135->gpio_pmic_pwrgood = pdata->gpio_pmic_pwrgood;
-	max17135->gpio_pmic_vcom_ctrl = pdata->gpio_pmic_vcom_ctrl;
-	max17135->gpio_pmic_wakeup = pdata->gpio_pmic_wakeup;
-	max17135->gpio_pmic_v3p3 = pdata->gpio_pmic_v3p3;
-	max17135->gpio_pmic_intr = pdata->gpio_pmic_intr;
-
-	gpio_request(max17135->gpio_pmic_wakeup, "epdc-pmic-wake");
-	gpio_direction_output(max17135->gpio_pmic_wakeup, 0);
-
-	gpio_request(max17135->gpio_pmic_vcom_ctrl, "epdc-vcom");
-	gpio_direction_output(max17135->gpio_pmic_vcom_ctrl, 0);
-
-	gpio_request(max17135->gpio_pmic_v3p3, "epdc-v3p3");
-	gpio_direction_output(max17135->gpio_pmic_v3p3, 0);
-
-	gpio_request(max17135->gpio_pmic_intr, "epdc-pmic-int");
-	gpio_direction_input(max17135->gpio_pmic_intr);
-
-	gpio_request(max17135->gpio_pmic_pwrgood, "epdc-pwrstat");
-	gpio_direction_input(max17135->gpio_pmic_pwrgood);
-
-	max17135->vcom_setup = false;
-	max17135->init_done = false;
-
-	for (i = 0; i < MAX17135_NUM_REGULATORS; i++) {
-		ret = max17135_register_regulator(max17135, i,
-			&pdata->regulator_init[i]);
-		if (ret != 0) {
-			printk(KERN_ERR"max17135 regulator init failed: %d\n",
-				ret);
-			return ret;
-		}
-	}
-
-	/*
-	 * TODO: We cannot enable full constraints for now, since
-	 * it results in the PFUZE regulators being disabled
-	 * at the end of boot, which disables critical regulators.
-	 */
-	/*regulator_has_full_constraints();*/
-
-	return 0;
-}
 
 static int mx6_evk_spi_cs[] = {
 	MX6_BRD_ECSPI1_CS0,
@@ -764,9 +594,6 @@ static struct imxi2c_platform_data mx6_evk_i2c2_data = {
 
 static struct i2c_board_info mxc_i2c0_board_info[] __initdata = {
 	{
-		I2C_BOARD_INFO("max17135", 0x48),
-		.platform_data = &max17135_pdata,
-	}, {
 		I2C_BOARD_INFO("elan-touch", 0x10),
 		.irq = gpio_to_irq(MX6SL_BRD_ELAN_INT),
 	}, {
@@ -1592,7 +1419,6 @@ static void __init mx6_evk_init(void)
 
 //	imx6dl_add_imx_pxp();
 //	imx6dl_add_imx_pxp_client();
-//	mxc_register_device(&max17135_sensor_device, NULL);
 	setup_spdc();
 	if (csi_enabled) {
 		imx6sl_add_fsl_csi();
