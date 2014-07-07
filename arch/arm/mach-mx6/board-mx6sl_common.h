@@ -176,8 +176,8 @@ static iomux_v3_cfg_t mx6sl_brd_pads[] = {
 //	MX6SL_PAD_FEC_TX_CLK__GPIO_4_21, /* Phy power enable */
 
 	/* I2C */
-//	MX6SL_PAD_I2C1_SCL__I2C1_SCL,
-//	MX6SL_PAD_I2C1_SDA__I2C1_SDA,
+	MX6SL_PAD_I2C1_SCL__I2C1_SCL,
+	MX6SL_PAD_I2C1_SDA__I2C1_SDA,
 //	MX6SL_PAD_I2C2_SCL__I2C2_SCL,
 //	MX6SL_PAD_I2C2_SDA__I2C2_SDA,
 
