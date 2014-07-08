@@ -92,7 +92,6 @@ struct clk *extern_audio_root;
 extern char *gp_reg_id;
 extern char *soc_reg_id;
 extern char *pu_reg_id;
-extern int __init mx6sl_evk_init_pfuze100(u32 int_gpio);
 
 static int csi_enabled;
 
@@ -1388,8 +1387,6 @@ static void __init mx6_evk_init(void)
 	/* SPI */
 //	imx6q_add_ecspi(0, &mx6_evk_spi_data);
 //	spi_device_init();
-
-//	mx6sl_evk_init_pfuze100(0);
 
 //	imx6q_add_anatop_thermal_imx(1, &mx6sl_anatop_thermal_data);
 
