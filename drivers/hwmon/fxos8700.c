@@ -499,7 +499,7 @@ int  fxos8700_device_init(struct fxos8700_data * pdata)
 	client_id = fxos8700_read_byte(pdata , FXOS8700_WHO_AM_I);
 	if (client_id !=  FXOS8700_DEVICE_ID && client_id != FXOS8700_PRE_DEVICE_ID) {
 		printk(KERN_ERR "fxos 8700 read chip ID 0x%x is not equal to 0x%x or 0x%x\n",
-					result, FXOS8700_DEVICE_ID,FXOS8700_PRE_DEVICE_ID);
+					client_id, FXOS8700_DEVICE_ID,FXOS8700_PRE_DEVICE_ID);
 		result = -EINVAL;
 		goto err_out;
 	}
