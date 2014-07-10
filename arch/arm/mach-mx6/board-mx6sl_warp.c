@@ -84,18 +84,14 @@
 
 
 static int spdc_sel;
-static void mx6sl_evk_suspend_enter(void);
-static void mx6sl_evk_suspend_exit(void);
+static void mx6sl_warp_suspend_enter(void);
+static void mx6sl_warp_suspend_exit(void);
 
 struct clk *extern_audio_root;
 
 extern char *gp_reg_id;
 extern char *soc_reg_id;
 extern char *pu_reg_id;
-
-static int csi_enabled;
-
-#define SXSDMAN_BLUETOOTH_ENABLE
 
 static struct ion_platform_data imx_ion_data = {
 	.nr = 1,
@@ -110,65 +106,17 @@ static struct ion_platform_data imx_ion_data = {
 	},
 };
 
-static iomux_v3_cfg_t mx6sl_brd_csi_enable_pads[] = {
-	MX6SL_PAD_EPDC_GDRL__CSI_MCLK,
-	MX6SL_PAD_EPDC_SDCE3__I2C3_SDA,
-	MX6SL_PAD_EPDC_SDCE2__I2C3_SCL,
-	MX6SL_PAD_EPDC_GDCLK__CSI_PIXCLK,
-	MX6SL_PAD_EPDC_GDSP__CSI_VSYNC,
-	MX6SL_PAD_EPDC_GDOE__CSI_HSYNC,
-	MX6SL_PAD_EPDC_SDLE__CSI_D_9,
-	MX6SL_PAD_EPDC_SDCLK__CSI_D_8,
-	MX6SL_PAD_EPDC_D7__CSI_D_7,
-	MX6SL_PAD_EPDC_D6__CSI_D_6,
-	MX6SL_PAD_EPDC_D5__CSI_D_5,
-	MX6SL_PAD_EPDC_D4__CSI_D_4,
-	MX6SL_PAD_EPDC_D3__CSI_D_3,
-	MX6SL_PAD_EPDC_D2__CSI_D_2,
-	MX6SL_PAD_EPDC_D1__CSI_D_1,
-	MX6SL_PAD_EPDC_D0__CSI_D_0,
-
-	MX6SL_PAD_EPDC_SDSHR__GPIO_1_26,	/* CMOS_RESET_B GPIO */
-	MX6SL_PAD_EPDC_SDOE__GPIO_1_25,		/* CMOS_PWDN GPIO */
-};
-
-#ifdef SXSDMAN_BLUETOOTH_ENABLE
-static iomux_v3_cfg_t mx6sl_uart4_pads[] = {
-	MX6SL_PAD_SD1_DAT4__UART4_RXD,
-	MX6SL_PAD_SD1_DAT5__UART4_TXD,
-	MX6SL_PAD_SD1_DAT6__UART4_RTS,
-	MX6SL_PAD_SD1_DAT7__UART4_CTS,
-	/* gpio for reset */
-	MX6SL_PAD_SD1_DAT0__GPIO_5_11,
-};
-#else
-/* uart2 pins */
-static iomux_v3_cfg_t mx6sl_uart2_pads[] = {
-	MX6SL_PAD_SD2_DAT5__UART2_TXD,
-	MX6SL_PAD_SD2_DAT4__UART2_RXD,
-	MX6SL_PAD_SD2_DAT6__UART2_RTS,
-	MX6SL_PAD_SD2_DAT7__UART2_CTS,
-};
-#endif
-
 enum sd_pad_mode {
 	SD_PAD_MODE_LOW_SPEED,
 	SD_PAD_MODE_MED_SPEED,
 	SD_PAD_MODE_HIGH_SPEED,
 };
 
-static const struct pm_platform_data mx6sl_evk_pm_data __initconst = {
+static const struct pm_platform_data mx6sl_warp_pm_data __initconst = {
 	.name		= "imx_pm",
-	.suspend_enter = mx6sl_evk_suspend_enter,
-	.suspend_exit = mx6sl_evk_suspend_exit,
+	.suspend_enter = mx6sl_warp_suspend_enter,
+	.suspend_exit = mx6sl_warp_suspend_exit,
 };
-
-static int __init csi_setup(char *__unused)
-{
-	csi_enabled = 1;
-	return 1;
-}
-__setup("csi", csi_setup);
 
 static int plt_sd_pad_change(unsigned int index, int clock)
 {
@@ -250,7 +198,7 @@ static const struct esdhc_platform_data mx6_evk_sd1_data __initconst = {
 	.platform_pad_change = plt_sd_pad_change,
 };
 
-static const struct esdhc_platform_data mx6_evk_sd2_data __initconst = {
+static const struct esdhc_platform_data mx6_warp_sd2_data __initconst = {
 	.always_present = 1,
 	.cd_gpio		= MX6_BRD_SD2_CD,
 	.wp_gpio		= MX6_BRD_SD2_WP,
@@ -275,33 +223,6 @@ static const struct esdhc_platform_data mx6_evk_sd3_data __initconst = {
 #define V_to_uV(V) (mV_to_uV(V * 1000))
 #define uV_to_V(uV) (uV_to_mV(uV) / 1000)
 
-static struct regulator_consumer_supply evk_vmmc_consumers[] = {
-	REGULATOR_SUPPLY("vmmc", "sdhci-esdhc-imx.0"),
-	REGULATOR_SUPPLY("vmmc", "sdhci-esdhc-imx.1"),
-	REGULATOR_SUPPLY("vmmc", "sdhci-esdhc-imx.2"),
-};
-
-static struct regulator_init_data evk_vmmc_init = {
-	.num_consumer_supplies = ARRAY_SIZE(evk_vmmc_consumers),
-	.consumer_supplies = evk_vmmc_consumers,
-};
-
-static struct fixed_voltage_config evk_vmmc_reg_config = {
-	.supply_name	= "vmmc",
-	.microvolts	= 3300000,
-	.gpio		= -1,
-	.init_data	= &evk_vmmc_init,
-};
-
-static struct platform_device evk_vmmc_reg_devices = {
-	.name		= "reg-fixed-voltage",
-	.id		= 0,
-	.dev		= {
-		.platform_data = &evk_vmmc_reg_config,
-	},
-};
-
-
 static const struct anatop_thermal_platform_data
 	mx6sl_anatop_thermal_data __initconst = {
 			.name = "anatop_thermal",
@@ -316,160 +237,13 @@ static const struct spi_imx_master mx6_evk_spi_data __initconst = {
 	.num_chipselect = ARRAY_SIZE(mx6_evk_spi_cs),
 };
 
-#if defined(CONFIG_MTD_M25P80) || defined(CONFIG_MTD_M25P80_MODULE)
-static struct mtd_partition m25p32_partitions[] = {
-	{
-		.name	= "bootloader",
-		.offset	= 0,
-		.size	= 0x00100000,
-	}, {
-		.name	= "kernel",
-		.offset	= MTDPART_OFS_APPEND,
-		.size	= MTDPART_SIZ_FULL,
-	},
-};
-
-static struct flash_platform_data m25p32_spi_flash_data = {
-	.name		= "m25p32",
-	.parts		= m25p32_partitions,
-	.nr_parts	= ARRAY_SIZE(m25p32_partitions),
-	.type		= "m25p32",
-};
-
-static struct spi_board_info m25p32_spi0_board_info[] __initdata = {
-	{
-	/* The modalias must be the same as spi device driver name */
-	.modalias	= "m25p80",
-	.max_speed_hz	= 20000000,
-	.bus_num	= 0,
-	.chip_select	= 0,
-	.platform_data	= &m25p32_spi_flash_data,
-	},
-};
-#endif
-
 static void spi_device_init(void)
 {
-#if defined(CONFIG_MTD_M25P80) || defined(CONFIG_MTD_M25P80_MODULE)
-	spi_register_board_info(m25p32_spi0_board_info,
-				ARRAY_SIZE(m25p32_spi0_board_info));
-#endif
 }
 
 static struct imx_ssi_platform_data mx6_sabresd_ssi_pdata = {
 	.flags = IMX_SSI_DMA | IMX_SSI_SYN,
 };
-
-static struct mxc_audio_platform_data wm8962_data;
-
-static struct platform_device mx6_sabresd_audio_wm8962_device = {
-	.name = "imx-wm8962",
-};
-
-static struct wm8962_pdata wm8962_config_data = {
-
-};
-
-static int wm8962_clk_enable(int enable)
-{
-	if (enable)
-		clk_enable(extern_audio_root);
-	else
-		clk_disable(extern_audio_root);
-
-	return 0;
-}
-
-static int mxc_wm8962_init(void)
-{
-	struct clk *pll4;
-	int rate;
-
-	extern_audio_root = clk_get(NULL, "extern_audio_clk");
-	if (IS_ERR(extern_audio_root)) {
-		pr_err("can't get extern_audio_root clock.\n");
-		return PTR_ERR(extern_audio_root);
-	}
-
-	pll4 = clk_get(NULL, "pll4");
-	if (IS_ERR(pll4)) {
-		pr_err("can't get pll4 clock.\n");
-		return PTR_ERR(pll4);
-	}
-
-	clk_set_parent(extern_audio_root, pll4);
-
-	rate = 24000000;
-	clk_set_rate(extern_audio_root, 24000000);
-
-	wm8962_data.sysclk = rate;
-	/* set AUDMUX pads to 1.8v */
-	mxc_iomux_set_specialbits_register(MX6SL_PAD_AUD_MCLK,
-					PAD_CTL_LVE, PAD_CTL_LVE_MASK);
-	mxc_iomux_set_specialbits_register(MX6SL_PAD_AUD_RXD,
-					PAD_CTL_LVE, PAD_CTL_LVE_MASK);
-	mxc_iomux_set_specialbits_register(MX6SL_PAD_AUD_TXC,
-					PAD_CTL_LVE, PAD_CTL_LVE_MASK);
-	mxc_iomux_set_specialbits_register(MX6SL_PAD_AUD_TXD,
-					PAD_CTL_LVE, PAD_CTL_LVE_MASK);
-	mxc_iomux_set_specialbits_register(MX6SL_PAD_AUD_TXFS,
-					PAD_CTL_LVE, PAD_CTL_LVE_MASK);
-
-	return 0;
-}
-
-static struct mxc_audio_platform_data wm8962_data = {
-	.ssi_num = 1,
-	.src_port = 2,
-	.ext_port = 3,
-	.hp_gpio = MX6_BRD_HEADPHONE_DET,
-	.hp_active_low = 1,
-	.mic_gpio = -1,
-	.mic_active_low = 1,
-	.init = mxc_wm8962_init,
-	.clock_enable = wm8962_clk_enable,
-};
-
-static struct regulator_consumer_supply sabresd_vwm8962_consumers[] = {
-	REGULATOR_SUPPLY("SPKVDD1", "1-001a"),
-	REGULATOR_SUPPLY("SPKVDD2", "1-001a"),
-};
-
-static struct regulator_init_data sabresd_vwm8962_init = {
-	.constraints = {
-		.name = "SPKVDD",
-		.valid_ops_mask =  REGULATOR_CHANGE_STATUS,
-		.boot_on = 1,
-	},
-	.num_consumer_supplies = ARRAY_SIZE(sabresd_vwm8962_consumers),
-	.consumer_supplies = sabresd_vwm8962_consumers,
-};
-
-static struct fixed_voltage_config sabresd_vwm8962_reg_config = {
-	.supply_name	= "SPKVDD",
-	.microvolts		= 4325000,
-	.gpio			= -1,
-	.enabled_at_boot = 1,
-	.init_data		= &sabresd_vwm8962_init,
-};
-
-static struct platform_device sabresd_vwm8962_reg_devices = {
-	.name	= "reg-fixed-voltage",
-	.id		= 4,
-	.dev	= {
-		.platform_data = &sabresd_vwm8962_reg_config,
-	},
-};
-
-static int __init imx6q_init_audio(void)
-{
-	platform_device_register(&sabresd_vwm8962_reg_devices);
-	mxc_register_device(&mx6_sabresd_audio_wm8962_device,
-			    &wm8962_data);
-	imx6q_add_imx_ssi(1, &mx6_sabresd_ssi_pdata);
-
-	return 0;
-}
 
 static int spdif_clk_set_rate(struct clk *clk, unsigned long rate)
 {
@@ -540,46 +314,6 @@ static struct fsl_mxc_lcd_platform_data sii902x_hdmi_data = {
        .put_pins = sii902x_put_pins,
 };
 
-static void mx6sl_csi_io_init(void)
-{
-	mxc_iomux_v3_setup_multiple_pads(mx6sl_brd_csi_enable_pads,	\
-				ARRAY_SIZE(mx6sl_brd_csi_enable_pads));
-
-	/* Camera reset */
-	gpio_request(MX6SL_BRD_CSI_RST, "cam-reset");
-	gpio_direction_output(MX6SL_BRD_CSI_RST, 1);
-
-	/* Camera power down */
-	gpio_request(MX6SL_BRD_CSI_PWDN, "cam-pwdn");
-	gpio_direction_output(MX6SL_BRD_CSI_PWDN, 1);
-	msleep(5);
-	gpio_set_value(MX6SL_BRD_CSI_PWDN, 0);
-	msleep(5);
-	gpio_set_value(MX6SL_BRD_CSI_RST, 0);
-	msleep(1);
-	gpio_set_value(MX6SL_BRD_CSI_RST, 1);
-	msleep(5);
-	gpio_set_value(MX6SL_BRD_CSI_PWDN, 1);
-}
-
-static void mx6sl_csi_cam_powerdown(int powerdown)
-{
-	if (powerdown)
-		gpio_set_value(MX6SL_BRD_CSI_PWDN, 1);
-	else
-		gpio_set_value(MX6SL_BRD_CSI_PWDN, 0);
-
-	msleep(2);
-}
-
-static struct fsl_mxc_camera_platform_data camera_data = {
-	.mclk = 24000000,
-	.io_init = mx6sl_csi_io_init,
-	.pwdn = mx6sl_csi_cam_powerdown,
-	.core_regulator = "VGEN2_1V5",
-	.analog_regulator = "VGEN6_2V8",
-};
-
 static struct imxi2c_platform_data mx6_evk_i2c0_data = {
 	.bitrate = 100000,
 };
@@ -590,34 +324,6 @@ static struct imxi2c_platform_data mx6_evk_i2c1_data = {
 
 static struct imxi2c_platform_data mx6_evk_i2c2_data = {
 	.bitrate = 100000,
-};
-
-static struct i2c_board_info mxc_i2c0_board_info[] __initdata = {
-	{
-		I2C_BOARD_INFO("elan-touch", 0x10),
-		.irq = gpio_to_irq(MX6SL_BRD_ELAN_INT),
-	}, {
-		I2C_BOARD_INFO("mma8450", 0x1c),
-	},
-};
-
-static struct i2c_board_info mxc_i2c1_board_info[] __initdata = {
-	{
-		I2C_BOARD_INFO("wm8962", 0x1a),
-		.platform_data = &wm8962_config_data,
-	},
-	{
-		I2C_BOARD_INFO("sii902x", 0),
-		.platform_data = &sii902x_hdmi_data,
-		.irq = gpio_to_irq(MX6SL_BRD_EPDC_PWRCTRL3)
-	},
-};
-
-static struct i2c_board_info mxc_i2c2_board_info[] __initdata = {
-	{
-		I2C_BOARD_INFO("ov5640", 0x3c),
-		.platform_data = (void *)&camera_data,
-	},
 };
 
 static struct mxc_dvfs_platform_data mx6sl_evk_dvfscore_data = {
@@ -649,20 +355,6 @@ static struct viv_gpu_platform_data imx6q_gpu_pdata __initdata = {
 };
 
 void __init early_console_setup(unsigned long base, struct clk *clk);
-
-#ifdef SXSDMAN_BLUETOOTH_ENABLE
-static const struct imxuart_platform_data mx6sl_evk_uart4_data __initconst = {
-	.flags      = IMXUART_HAVE_RTSCTS,
-	.dma_req_rx = MX6Q_DMA_REQ_UART4_RX,
-	.dma_req_tx = MX6Q_DMA_REQ_UART4_TX,
-};
-#else
-static const struct imxuart_platform_data mx6sl_evk_uart1_data __initconst = {
-	.flags      = IMXUART_HAVE_RTSCTS | IMXUART_SDMA,
-	.dma_req_rx = MX6Q_DMA_REQ_UART2_RX,
-	.dma_req_tx = MX6Q_DMA_REQ_UART2_TX,
-};
-#endif
 
 static inline void mx6_evk_init_uart(void)
 {
@@ -1166,32 +858,6 @@ static struct mxc_fb_platform_data hdmi_fb_data[] = {
 	 },
 };
 
-static int mx6sl_evk_keymap[] = {
-	KEY(0, 0, KEY_VOLUMEUP),
-	KEY(0, 1, KEY_VOLUMEDOWN),
-	KEY(0, 2, KEY_RIGHT),
-	KEY(0, 3, KEY_F2),
-
-	KEY(1, 0, KEY_LEFT),
-	KEY(1, 1, KEY_UP),
-	KEY(1, 2, KEY_POWER),
-	KEY(1, 3, KEY_MENU),
-
-	KEY(2, 0, KEY_BACK),
-	KEY(2, 1, KEY_DOWN),
-	KEY(2, 2, KEY_HOME),
-	KEY(2, 3, KEY_NEXT),
-
-	KEY(3, 0, KEY_UP),
-	KEY(3, 1, KEY_LEFT),
-	KEY(3, 2, KEY_RIGHT),
-	KEY(3, 3, KEY_DOWN),
-};
-
-static const struct matrix_keymap_data mx6sl_evk_map_data __initconst = {
-	.keymap		= mx6sl_evk_keymap,
-	.keymap_size	= ARRAY_SIZE(mx6sl_evk_keymap),
-};
 static void __init elan_ts_init(void)
 {
 	mxc_iomux_v3_setup_multiple_pads(mx6sl_brd_elan_pads,
@@ -1213,38 +879,6 @@ static void __init elan_ts_init(void)
 	gpio_direction_output(MX6SL_BRD_ELAN_CE, 1);
 }
 
-/*
- *Usually UOK and DOK should have separate
- *line to differentiate its behaviour (with different
- * GPIO irq),because connect max8903 pin UOK to
- *pin DOK from hardware design,cause software cannot
- *process and distinguish two interrupt, so default
- *enable dc_valid for ac charger
- */
-static struct max8903_pdata charger1_data = {
-	.dok = MX6_BRD_CHG_DOK,
-	.uok = MX6_BRD_CHG_UOK,
-	.chg = MX6_BRD_CHG_STATUS,
-	.flt = MX6_BRD_CHG_FLT,
-	.dcm_always_high = true,
-	.dc_valid = true,
-	.usb_valid = false,
-	.feature_flag = 1,
-};
-
-static struct platform_device evk_max8903_charger_1 = {
-	.name	= "max8903-charger",
-	.dev	= {
-		.platform_data = &charger1_data,
-	},
-};
-
-/*! Device Definition for csi v4l2 device */
-static struct platform_device csi_v4l2_devices = {
-	.name = "csi_v4l2",
-	.id = 0,
-};
-
 #define SNVS_LPCR 0x38
 static void mx6_snvs_poweroff(void)
 {
@@ -1256,65 +890,7 @@ static void mx6_snvs_poweroff(void)
 	writel(value | 0x60, mx6_snvs_base + SNVS_LPCR);
 }
 
-#ifdef SXSDMAN_BLUETOOTH_ENABLE
-static int uart4_enabled;
-static int __init uart4_setup(char * __unused)
-{
-	uart4_enabled = 1;
-	return 1;
-}
-__setup("bluetooth", uart4_setup);
-
-static void __init uart4_init(void)
-{
-	mxc_iomux_v3_setup_multiple_pads(mx6sl_uart4_pads,
-					ARRAY_SIZE(mx6sl_uart4_pads));
-	imx6sl_add_imx_uart(3, &mx6sl_evk_uart4_data);
-}
-#else
-static int uart2_enabled;
-static int __init uart2_setup(char * __unused)
-{
-	uart2_enabled = 1;
-	return 1;
-}
-__setup("bluetooth", uart2_setup);
-
-static void __init uart2_init(void)
-{
-	mxc_iomux_v3_setup_multiple_pads(mx6sl_uart2_pads,
-					ARRAY_SIZE(mx6sl_uart2_pads));
-	imx6sl_add_imx_uart(1, &mx6sl_evk_uart1_data);
-}
-#endif
-
-static void mx6sl_evk_bt_reset(void)
-{
-	gpio_request(MX6SL_BRD_BT_RESET, "bt-reset");
-	gpio_direction_output(MX6SL_BRD_BT_RESET, 0);
-	/* pull down reset pin at least >5ms */
-	mdelay(6);
-	/* pull up after power supply BT */
-	gpio_set_value(MX6SL_BRD_BT_RESET, 1);
-	gpio_free(MX6SL_BRD_BT_RESET);
-}
-
-static int mx6sl_evk_bt_power_change(int status)
-{
-	if (status)
-		mx6sl_evk_bt_reset();
-	return 0;
-}
-
-static struct platform_device mxc_bt_rfkill = {
-	.name = "mxc_bt_rfkill",
-};
-
-static struct imx_bt_rfkill_platform_data mxc_bt_rfkill_data = {
-	.power_change = mx6sl_evk_bt_power_change,
-};
-
-static void mx6sl_evk_suspend_enter()
+static void mx6sl_warp_suspend_enter()
 {
 	iomux_v3_cfg_t *p = suspend_enter_pads;
 	int i;
@@ -1336,7 +912,7 @@ static void mx6sl_evk_suspend_enter()
 
 }
 
-static void mx6sl_evk_suspend_exit()
+static void mx6sl_warp_suspend_exit()
 {
 	mxc_iomux_v3_setup_multiple_pads(suspend_exit_pads,
 			ARRAY_SIZE(suspend_exit_pads));
@@ -1345,7 +921,7 @@ static void mx6sl_evk_suspend_exit()
 /*!
  * Board specific initialization.
  */
-static void __init mx6_evk_init(void)
+static void __init mx6_warp_init(void)
 {
 	u32 i;
 
@@ -1360,29 +936,8 @@ static void __init mx6_evk_init(void)
 //	imx6q_add_imx_snvs_rtc();
 
 	imx6q_add_imx_i2c(0, &mx6_evk_i2c0_data);
-//	imx6q_add_imx_i2c(1, &mx6_evk_i2c1_data);
 //	i2c_register_board_info(0, mxc_i2c0_board_info,
 //			ARRAY_SIZE(mxc_i2c0_board_info));
-
-	/*  setting sii902x address when hdmi enabled */
-	if (hdmi_enabled) {
-		for (i = 0; i < ARRAY_SIZE(mxc_i2c1_board_info); i++) {
-			if (!strcmp(mxc_i2c1_board_info[i].type, "sii902x")) {
-				mxc_i2c1_board_info[i].addr = 0x39;
-				break;
-			}
-		}
-	}
-
-	i2c_register_board_info(1, mxc_i2c1_board_info,
-			ARRAY_SIZE(mxc_i2c1_board_info));
-	/* only camera on I2C3, that's why we can do so */
-	if (csi_enabled == 1) {
-		mxc_register_device(&csi_v4l2_devices, NULL);
-		imx6q_add_imx_i2c(2, &mx6_evk_i2c2_data);
-		i2c_register_board_info(2, mxc_i2c2_board_info,
-				ARRAY_SIZE(mxc_i2c2_board_info));
-	}
 
 	/* SPI */
 //	imx6q_add_ecspi(0, &mx6_evk_spi_data);
@@ -1391,19 +946,12 @@ static void __init mx6_evk_init(void)
 //	imx6q_add_anatop_thermal_imx(1, &mx6sl_anatop_thermal_data);
 
 	mx6_evk_init_uart();
-	/* get enet tx reference clk from FEC_REF_CLK pad.
-	 * GPR1[14] = 0, GPR1[18:17] = 00
-	 */
-//	mxc_iomux_set_gpr_register(1, 14, 1, 0);
-//	mxc_iomux_set_gpr_register(1, 17, 2, 0);
 
-	platform_device_register(&evk_vmmc_reg_devices);
-	imx6q_add_sdhci_usdhc_imx(1, &mx6_evk_sd2_data);
+	//platform_device_register(&evk_vmmc_reg_devices);
+	imx6q_add_sdhci_usdhc_imx(1, &mx6_warp_sd2_data);
 
 	mx6_evk_init_usb();
 //	imx6q_add_otp();
-//	imx6q_add_mxc_pwm(0);
-//	imx6q_add_mxc_pwm_backlight(0, &mx6_evk_pwm_backlight_data);
 
 /*	if (hdmi_enabled) {
 		imx6dl_add_imx_elcdif(&hdmi_fb_data[0]);
@@ -1418,26 +966,13 @@ static void __init mx6_evk_init(void)
 //	imx6dl_add_imx_pxp();
 //	imx6dl_add_imx_pxp_client();
 	setup_spdc();
-	if (csi_enabled) {
-		imx6sl_add_fsl_csi();
-	} else  {
-		if (!spdc_sel)
-			imx6dl_add_imx_epdc(&epdc_data);
-		else
-			imx6sl_add_imx_spdc(&spdc_data);
-	}
+	/*
+	if (!spdc_sel)
+		imx6dl_add_imx_epdc(&epdc_data);
+	else
+		imx6sl_add_imx_spdc(&spdc_data);
+	*/
 //	imx6q_add_dvfs_core(&mx6sl_evk_dvfscore_data);
-
-	imx6q_init_audio();
-
-	/* uart2 for bluetooth */
-#ifdef SXSDMAN_BLUETOOTH_ENABLE
-	if (uart4_enabled)
-//		uart4_init();
-#else
-	if (uart2_enabled)
-//		uart2_init();
-#endif
 
 //	mxc_register_device(&mxc_bt_rfkill, &mxc_bt_rfkill_data);
 
@@ -1451,12 +986,6 @@ static void __init mx6_evk_init(void)
 //	imx6sl_add_rngb();
 //	imx6sl_add_imx_pxp_v4l2();
 
-//	mxc_spdif_data.spdif_core_clk = clk_get_sys("mxc_spdif.0", NULL);
-//	clk_put(mxc_spdif_data.spdif_core_clk);
-//	imx6q_add_spdif(&mxc_spdif_data);
-//	imx6q_add_spdif_dai();
-//	imx6q_add_spdif_audio_device();
-
 	imx6q_add_perfmon(0);
 	imx6q_add_perfmon(1);
 	imx6q_add_perfmon(2);
@@ -1464,7 +993,7 @@ static void __init mx6_evk_init(void)
 
 //	platform_device_register(&evk_max8903_charger_1);
 //	pm_power_off = mx6_snvs_poweroff;
-//	imx6q_add_pm_imx(0, &mx6sl_evk_pm_data);
+//	imx6q_add_pm_imx(0, &mx6sl_warp_pm_data);
 
 	if (imx_ion_data.heaps[0].size)
 		platform_device_register_resndata(NULL, "ion-mxc", 0, NULL, 0, \
@@ -1490,7 +1019,7 @@ static struct sys_timer mxc_timer = {
 	.init   = mx6_timer_init,
 };
 
-static void __init mx6_evk_reserve(void)
+static void __init mx6_warp_reserve(void)
 {
 #if defined(CONFIG_MXC_GPU_VIV) || defined(CONFIG_MXC_GPU_VIV_MODULE)
 	phys_addr_t phys;
@@ -1516,7 +1045,7 @@ MACHINE_START(MX6SL_EVK, "WaRP Board Wearable Reference Platform")
 	.boot_params	= MX6SL_PHYS_OFFSET + 0x100,
 	.map_io		= mx6_map_io,
 	.init_irq	= mx6_init_irq,
-	.init_machine	= mx6_evk_init,
+	.init_machine	= mx6_warp_init,
 	.timer		= &mxc_timer,
-	.reserve	= mx6_evk_reserve,
+	.reserve	= mx6_warp_reserve,
 MACHINE_END
