@@ -24,4 +24,10 @@
 // SPI for Accelerometer
 #define MX6_BRD_ECSPI2_CS0	IMX_GPIO_NR(4, 15)	// ECSPI2_SS0
 
+// GPIO for WL
+#define WARP_WL_REG_ON			IMX_GPIO_NR(4, 5)
+#define WARP_GPIO0_WL_HOSTWAKE		IMX_GPIO_NR(4, 7)
+#define WARP_BT_RST_N			IMX_GPIO_NR(4, 6)
+#define WARP_BT_REG_ON			IMX_GPIO_NR(3, 28)
+
 #endif
