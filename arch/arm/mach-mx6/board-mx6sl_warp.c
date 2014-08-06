@@ -60,6 +60,8 @@
 #include <sound/pcm.h>
 #include <linux/power/sabresd_battery.h>
 #include <linux/ion.h>
+#include <linux/pwm.h>
+#include <linux/pwm_clk.h>
 
 #include <mach/common.h>
 #include <mach/hardware.h>
@@ -937,6 +939,11 @@ static void mx6sl_warp_suspend_enter()
 
 }
 
+static struct platform_pwm_clk_data mx6_warp_pwm4_clk_data = {
+    .pwm_id        = 3,
+    .pwm_period_ns    = 100,
+};
+
 static void mx6sl_warp_suspend_exit()
 {
 	mxc_iomux_v3_setup_multiple_pads(suspend_exit_pads,
@@ -952,6 +959,9 @@ static void __init mx6_warp_init(void)
 
 	mxc_iomux_v3_setup_multiple_pads(mx6sl_brd_pads,
 					ARRAY_SIZE(mx6sl_brd_pads));
+	mxc_iomux_v3_setup_multiple_pads(warp_brd_pads,
+					ARRAY_SIZE(warp_brd_pads));
+
 
 //	elan_ts_init(); // REVO - removed
 
@@ -977,6 +987,10 @@ static void __init mx6_warp_init(void)
 
 	mx6_evk_init_usb();
 //	imx6q_add_otp();
+
+	// PWM Output Clock to SSD2805C
+	imx6q_add_mxc_pwm(3);
+	imx6sl_add_mxc_pwm_clk(3, &mx6_warp_pwm4_clk_data);
 
 /*	if (hdmi_enabled) {
 		imx6dl_add_imx_elcdif(&hdmi_fb_data[0]);

@@ -30,4 +30,16 @@
 #define WARP_BT_RST_N			IMX_GPIO_NR(4, 6)
 #define WARP_BT_REG_ON			IMX_GPIO_NR(3, 28)
 
+
+// WaRP Specific PAD_CTRL Definitions
+
+#define MX6SL_PWM_PAD_CTRL    ( PAD_CTL_SPEED_HIGH | PAD_CTL_DSE_80ohm |    \
+                PAD_CTL_SRE_FAST | PAD_CTL_LVE)
+
+static iomux_v3_cfg_t warp_brd_pads[] = {
+
+	/* PWM OUTPUT */
+	MX6SL_PAD_AUD_MCLK__PWM4_PWMO | MUX_PAD_CTRL(MX6SL_PWM_PAD_CTRL)    // LCD_CLK
+};
+
 #endif
