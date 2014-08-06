@@ -545,6 +545,12 @@ config MAX77696_CLK
 	  If you say yes here you get support for MAX77696 32KHz oscillator and
 	  buffered outputs.
 
+config PWM_CLK
+	bool "Basic driver for PWM output to pad"
+	depends on MXC_PWM
+	help
+	  Provides simple interface to use PWM as a clock signal.
+
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
 source "drivers/misc/cb710/Kconfig"
