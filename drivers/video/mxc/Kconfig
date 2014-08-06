@@ -123,6 +123,10 @@ config FB_MXC_ELCDIF_FB
 	depends on FB && ARCH_MXC
 	tristate "Support MXC ELCDIF framebuffer"
 
+config FB_MXC_ELCDIF_MPU8080_FB
+	depends on FB && ARCH_MXC && !FB_MXC_ELCDIF_FB
+	tristate "Support modified MXC ELCDIF framebuffer for MPU8080"
+
 choice
 	prompt "Async Panel Interface Type"
 	depends on FB_MXC_ASYNC_PANEL && FB_MXC
@@ -138,3 +142,9 @@ config FB_MXC_ASYNC_PANEL_IFC_SERIAL
 	bool "Serial Bus Interface"
 
 endchoice
+
+config FB_MXC_LH154_PANEL
+    tristate "LH154 Panel"
+    help
+     Driver for the LH154Q01 display. Tested only with MPU8080 interface
+     and SSD2805C MIPI bridge on the WaRP iMX6SL based platform.

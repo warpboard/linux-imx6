@@ -885,6 +885,42 @@ static struct mxc_fb_platform_data hdmi_fb_data[] = {
 	 },
 };
 
+//----------------------- REVO LH154 LCD ----------------------------------
+static struct fb_videomode lh154_video_modes[] = {
+	{
+	.name = "LH154",
+	.refresh = 60,
+	.xres = 240,
+	.yres = 240,
+	.pixclock = 289352,
+	.left_margin = 0,
+	.right_margin = 0,
+	.upper_margin = 0,
+	.lower_margin = 0,
+	.hsync_len = 0,
+	.vsync_len = 0,
+	.sync = 0,
+	.vmode = FB_VMODE_NONINTERLACED,
+	.flag = 0,
+	},
+};
+
+static struct mxc_fb_platform_data lh154_fb_data[] = {
+	{
+	.interface_pix_fmt = V4L2_PIX_FMT_RGB24, // ELCDIF_PIX_FMT_RGB666 ?
+	.mode_str = "LH154",
+	.mode = lh154_video_modes,
+	.num_modes = ARRAY_SIZE(lh154_video_modes),
+	},
+};
+
+static struct platform_device lcd_lh154_device = {
+	.name = "lcd_lh154",
+};
+
+//---------------------------------------------------------
+
+
 static void __init elan_ts_init(void)
 {
 	mxc_iomux_v3_setup_multiple_pads(mx6sl_brd_elan_pads,
@@ -944,6 +980,12 @@ static struct platform_pwm_clk_data mx6_warp_pwm4_clk_data = {
     .pwm_period_ns    = 100,
 };
 
+static struct platform_pwm_clk_data mx6_warp_pwm3_clk_data = {
+    .pwm_id        = 2,
+    .pwm_period_ns    = 100,
+};
+
+
 static void mx6sl_warp_suspend_exit()
 {
 	mxc_iomux_v3_setup_multiple_pads(suspend_exit_pads,
@@ -962,6 +1004,23 @@ static void __init mx6_warp_init(void)
 	mxc_iomux_v3_setup_multiple_pads(warp_brd_pads,
 					ARRAY_SIZE(warp_brd_pads));
 
+//	mxc_iomux_v3_setup_multiple_pads(mcu8080display_pads,ARRAY_SIZE(mcu8080display_pads));
+
+	gpio_request(PINID_MIPI_TE,    "lcd_te");	// MIPI_TE
+	gpio_request(PINID_LCD_INTN,   "lcd_intn");	// LCD_INTn
+	gpio_request(PINID_LCD_RD,     "lcd_rd"); 	// LCD_RDX
+	gpio_request(PINID_LCD_RS,     "lcd_rs"); 	// LCD_DCX
+	gpio_request(PINID_LCD_RSTN,   "lcd_rstn");  	// LCD_RSTn
+	gpio_request(PINID_MIPI_BSYNC, "lcd_bsync");  	// MIPI_B_SYNC
+	gpio_request(PINID_MIPI_RSTN,  "mipi_rstn"); 	// MIPI_RSTn
+
+	gpio_direction_input(PINID_MIPI_TE); 		// MIPI_TE
+	gpio_direction_output(PINID_LCD_RSTN, 1);  	// LCD_RSTn
+	gpio_direction_input(PINID_LCD_INTN); 		// LCD_INTn
+	gpio_direction_input(PINID_MIPI_BSYNC);  	// MIPI_B_SYNC
+	gpio_direction_output(PINID_MIPI_RSTN, 1); 	// MIPI_RSTn
+	gpio_direction_output(PINID_LCD_RD, 1); 	// LCD_RDX
+	gpio_direction_output(PINID_LCD_RS, 1); 	// LCD_DCX(ssd)/LCD_RS(mx6)
 
 //	elan_ts_init(); // REVO - removed
 
@@ -989,8 +1048,12 @@ static void __init mx6_warp_init(void)
 //	imx6q_add_otp();
 
 	// PWM Output Clock to SSD2805C
+
+	printk(KERN_INFO "REVO: Starting PWMs ******************************\n");
 	imx6q_add_mxc_pwm(3);
 	imx6sl_add_mxc_pwm_clk(3, &mx6_warp_pwm4_clk_data);
+	imx6q_add_mxc_pwm(2);
+	imx6sl_add_mxc_pwm_clk(2, &mx6_warp_pwm3_clk_data);
 
 /*	if (hdmi_enabled) {
 		imx6dl_add_imx_elcdif(&hdmi_fb_data[0]);
@@ -1002,8 +1065,12 @@ static void __init mx6_warp_init(void)
 		mxc_register_device(&lcd_wvga_device, NULL);
 	}*/
 
-//	imx6dl_add_imx_pxp();
-//	imx6dl_add_imx_pxp_client();
+	imx6dl_add_imx_elcdif(&lh154_fb_data[0]);
+
+	mxc_register_device(&lcd_lh154_device, NULL);
+	imx6dl_add_imx_pxp();
+	imx6dl_add_imx_pxp_client();
+
 	setup_spdc();
 	/*
 	if (!spdc_sel)
@@ -1018,12 +1085,12 @@ static void __init mx6_warp_init(void)
 //	imx6q_add_viim();
 //	imx6q_add_imx2_wdt(0, NULL);
 
-//	imx_add_viv_gpu(&imx6_gpu_data, &imx6q_gpu_pdata);
+	imx_add_viv_gpu(&imx6_gpu_data, &imx6q_gpu_pdata);
 //	imx6sl_add_imx_keypad(&mx6sl_evk_map_data);
 //	imx6q_add_busfreq();
 //	imx6sl_add_dcp();
 //	imx6sl_add_rngb();
-//	imx6sl_add_imx_pxp_v4l2();
+	imx6sl_add_imx_pxp_v4l2();
 
 	imx6q_add_perfmon(0);
 	imx6q_add_perfmon(1);
