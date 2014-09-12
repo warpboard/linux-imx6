@@ -60,6 +60,7 @@
 #include <sound/pcm.h>
 #include <linux/power/sabresd_battery.h>
 #include <linux/ion.h>
+#include <linux/wlan_plat.h>
 
 #include <mach/common.h>
 #include <mach/hardware.h>
@@ -93,6 +94,11 @@ struct clk *extern_audio_root;
 extern char *gp_reg_id;
 extern char *soc_reg_id;
 extern char *pu_reg_id;
+
+/* Additional Defines for BRCM WLAN */
+#define BRCM 1
+#define GPIO_BCMDHD_PWR		WARP_WL_REG_ON
+#define GPIO_BCMDHD_OOB		WARP_GPIO0_WL_HOSTWAKE
 
 static struct ion_platform_data imx_ion_data = {
 	.nr = 1,
@@ -210,9 +216,10 @@ static const struct esdhc_platform_data mx6_warp_sd2_data __initconst = {
 	.cd_type = ESDHC_CD_PERMANENT,
 };
 
-static const struct esdhc_platform_data mx6_evk_sd3_data __initconst = {
-	.cd_gpio		= MX6_BRD_SD3_CD,
+static const struct esdhc_platform_data mx6_warp_sd3_data __initconst = {
+	.cd_gpio		= ESDHC_CD_PERMANENT, /* MX6_BRD_SD3_CD, */
 	.wp_gpio		= -1,
+	.always_present		= 1,  /* does not look to make change with BCMDHD in terms of setting */
 	.keep_power_at_suspend	= 1,
 	.delay_line		= 0,
 	.support_18v		= 1,
@@ -943,6 +950,66 @@ static void mx6sl_warp_suspend_exit()
 			ARRAY_SIZE(suspend_exit_pads));
 }
 
+#if BRCM  /* add routines for BRCM Wireless */
+static int bcmdhd_set_power(int on)
+{
+       /* can only set GPIO for correctly implemented hardware */
+       gpio_set_value(WARP_WL_REG_ON, on);
+       msleep(500);
+       return 0;
+}
+
+static int bcmdhd_set_card_detect(int detect)
+{
+	/* turn on/off GPIO so carddetect will register in SDIO driver */
+	/* dummy function call in this case */
+	return 0;
+}
+
+static struct wifi_platform_data bcmdhd_data = {
+       .set_power      = bcmdhd_set_power,
+       .set_carddetect = bcmdhd_set_card_detect,
+};
+
+static struct resource bcmdhd_res[] = {
+       {
+               .name = "bcmdhd_wlan_irq",
+               .start = GPIO_BCMDHD_OOB,
+               .end = GPIO_BCMDHD_OOB,
+               .flags = IORESOURCE_IRQ | IORESOURCE_IRQ_HIGHLEVEL | IORESOURCE_IRQ_SHAREABLE,
+        }
+};
+
+static struct platform_device bcmdhd_device = {
+       .name   = "bcmdhd_wlan",
+       .dev    = {
+               .platform_data = &bcmdhd_data,
+       },
+       .num_resources = ARRAY_SIZE(bcmdhd_res),
+       .resource = bcmdhd_res,
+};
+
+static struct gpio bcmdhd_gpios[] __initdata = {
+       { GPIO_BCMDHD_PWR,      GPIOF_OUT_INIT_LOW,	"bcmdhd_pwr"    },
+       { GPIO_BCMDHD_OOB,      GPIOF_IN,		"bcmdhd_oob"    },
+};
+
+static void __init bcmdhd_init(void)
+{
+       int status;
+	   /* OOB IRQ and WLAN ENABLE lines are configured elsewhere for correct logic level */
+       /* Request of GPIO lines */
+       status = gpio_request_array(bcmdhd_gpios, ARRAY_SIZE(bcmdhd_gpios));
+       if (status) {
+               return;
+       }
+
+       bcmdhd_res[0].start = gpio_to_irq(GPIO_BCMDHD_OOB);
+       bcmdhd_res[0].end = bcmdhd_res[0].start;
+       platform_device_register(&bcmdhd_device);
+}
+#endif  /* BRCM WLAN modifications */
+
 /*!
  * Board specific initialization.
  */
@@ -974,6 +1041,14 @@ static void __init mx6_warp_init(void)
 
 	//platform_device_register(&evk_vmmc_reg_devices);
 	imx6q_add_sdhci_usdhc_imx(1, &mx6_warp_sd2_data);
+
+#if BRCM
+	/* bcm dhd wifi init */
+	bcmdhd_init();
+	gpio_direction_output(WARP_WL_REG_ON, 1); // set direction to output and value to 1
+	bcmdhd_set_power(1);  /* need to take WLAN core out of reset prior to probing */
+	imx6q_add_sdhci_usdhc_imx(2, &mx6_warp_sd3_data);
+#endif /* BRCM */
 
 	mx6_evk_init_usb();
 //	imx6q_add_otp();
