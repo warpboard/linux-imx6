@@ -352,12 +352,19 @@ static struct imxi2c_platform_data mx6_evk_i2c0_data = {
 	.bitrate = 100000,
 };
 
-static struct imxi2c_platform_data mx6_evk_i2c1_data = {
+static struct imxi2c_platform_data warp_i2c1_data = {
+	.bitrate = 400000,
+};
+
+static struct imxi2c_platform_data mx6sl_warp_i2c2_data = {
 	.bitrate = 100000,
 };
 
-static struct imxi2c_platform_data mx6_evk_i2c2_data = {
-	.bitrate = 100000,
+static struct i2c_board_info mxc_i2c1_board_info[] __initdata = {
+	{
+		I2C_BOARD_INFO("ft5x06-ts", 0x38),
+		.irq = gpio_to_irq(PINID_FT5X06_INT),
+	}
 };
 
 static struct mxc_dvfs_platform_data mx6sl_evk_dvfscore_data = {
@@ -1089,6 +1096,9 @@ static void __init mx6_warp_init(void)
 	gpio_direction_output(PINID_LCD_RD, 1); 	// LCD_RDX
 	gpio_direction_output(PINID_LCD_RS, 1); 	// LCD_DCX(ssd)/LCD_RS(mx6)
 
+	gpio_request(PINID_FT5X06_INT, "ft5216_int");
+	gpio_direction_input(PINID_FT5X06_INT);
+
 //	elan_ts_init(); // REVO - removed
 
 //	gp_reg_id = mx6sl_evk_dvfscore_data.reg_id;
@@ -1097,8 +1107,12 @@ static void __init mx6_warp_init(void)
 //	imx6q_add_imx_snvs_rtc();
 
 	imx6q_add_imx_i2c(0, &mx6_evk_i2c0_data);
+	imx6q_add_imx_i2c(1, &warp_i2c1_data);
+
 //	i2c_register_board_info(0, mxc_i2c0_board_info,
 //			ARRAY_SIZE(mxc_i2c0_board_info));
+	i2c_register_board_info(1, mxc_i2c1_board_info,
+			ARRAY_SIZE(mxc_i2c1_board_info));
 
 	/* SPI */
 	imx6q_add_ecspi(1, &mx6_warp_spi_data);
