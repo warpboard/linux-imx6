@@ -994,12 +994,6 @@ static struct platform_pwm_clk_data mx6_warp_pwm4_clk_data = {
     .pwm_period_ns    = 100,
 };
 
-static struct platform_pwm_clk_data mx6_warp_pwm3_clk_data = {
-    .pwm_id        = 2,
-    .pwm_period_ns    = 100,
-};
-
-
 static void mx6sl_warp_suspend_exit()
 {
 	mxc_iomux_v3_setup_multiple_pads(suspend_exit_pads,
@@ -1141,8 +1135,6 @@ static void __init mx6_warp_init(void)
 	printk(KERN_INFO "REVO: Starting PWMs ******************************\n");
 	imx6q_add_mxc_pwm(3);
 	imx6sl_add_mxc_pwm_clk(3, &mx6_warp_pwm4_clk_data);
-	imx6q_add_mxc_pwm(2);
-	imx6sl_add_mxc_pwm_clk(2, &mx6_warp_pwm3_clk_data);
 
 /*	if (hdmi_enabled) {
 		imx6dl_add_imx_elcdif(&hdmi_fb_data[0]);
