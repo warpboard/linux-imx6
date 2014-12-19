@@ -967,6 +967,12 @@ static void mx6_snvs_poweroff(void)
 	writel(value | 0x60, mx6_snvs_base + SNVS_LPCR);
 }
 
+static void __init uart3_init(void){
+	mxc_iomux_v3_setup_multiple_pads(mx6sl_uart3_pads,
+		ARRAY_SIZE(mx6sl_uart3_pads));
+	imx6sl_add_imx_uart(2, NULL);
+}
+
 static void mx6sl_warp_suspend_enter()
 {
 	iomux_v3_cfg_t *p = suspend_enter_pads;
@@ -1160,6 +1166,8 @@ static void __init mx6_warp_init(void)
 		imx6sl_add_imx_spdc(&spdc_data);
 	*/
 //	imx6q_add_dvfs_core(&mx6sl_evk_dvfscore_data);
+
+	uart3_init();
 
 //	mxc_register_device(&mxc_bt_rfkill, &mxc_bt_rfkill_data);
 
