@@ -227,5 +227,9 @@ static iomux_v3_cfg_t mcu8080display_gpio_pads[] = {
 static iomux_v3_cfg_t warp_suspend_enter_pads[] = {
 };
 
+static iomux_v3_cfg_t warp_suspend_exit_pads[] = {
+};
+
+
 
 #endif

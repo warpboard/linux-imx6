@@ -979,7 +979,7 @@ static void mx6sl_warp_suspend_enter()
 	int i;
 
 	/* Set PADCTRL to 0 for all IOMUX. */
-	for (i = 0; i < ARRAY_SIZE(suspend_enter_pads); i++) {
+	for (i = 0; i < ARRAY_SIZE(warp_suspend_enter_pads); i++) {
 		suspend_exit_pads[i] = *p;
 		*p &= ~MUX_PAD_CTRL_MASK;
 		/* Enable the Pull down and the keeper
@@ -988,10 +988,10 @@ static void mx6sl_warp_suspend_enter()
 		*p |= ((u64)0x3000 << MUX_PAD_CTRL_SHIFT);
 		p++;
 	}
-	mxc_iomux_v3_get_multiple_pads(suspend_exit_pads,
-			ARRAY_SIZE(suspend_exit_pads));
-	mxc_iomux_v3_setup_multiple_pads(suspend_enter_pads,
-			ARRAY_SIZE(suspend_enter_pads));
+	mxc_iomux_v3_get_multiple_pads(warp_suspend_exit_pads,
+			ARRAY_SIZE(warp_suspend_exit_pads));
+	mxc_iomux_v3_setup_multiple_pads(warp_suspend_enter_pads,
+			ARRAY_SIZE(warp_suspend_enter_pads));
 
 }
 
@@ -1002,8 +1002,8 @@ static struct platform_pwm_clk_data mx6_warp_pwm4_clk_data = {
 
 static void mx6sl_warp_suspend_exit()
 {
-	mxc_iomux_v3_setup_multiple_pads(suspend_exit_pads,
-			ARRAY_SIZE(suspend_exit_pads));
+	mxc_iomux_v3_setup_multiple_pads(warp_suspend_exit_pads,
+			ARRAY_SIZE(warp_suspend_exit_pads));
 }
 
 #if BRCM  /* add routines for BRCM Wireless */
