@@ -177,8 +177,6 @@ void dump(void) { }
 static void lcdif_write(void *ptr, unsigned len, int is_data)
 {
 	uint8_t *buf = ptr;
-	void __iomem *elcdif_base;
-	elcdif_base = ioremap(ELCDIF_PHY_BASE_ADDR, SZ_4K);
 
 #ifdef DEBUG
 	dump_stack();
@@ -256,16 +254,13 @@ static int lcdif_read(u16 reg, u16 *rbuf, int rlen)
 #warning __ GPIO READ ACTIVE - FOR DEBUG USE ONLY __
 
 	unsigned int currGPIO = 0;
-	void __iomem *elcdif_base;
 	instance->gpio_read_sem = 1;
 
-	elcdif_base = ioremap(ELCDIF_PHY_BASE_ADDR, SZ_4K);
-
 	void __iomem *gpio3_base;
-	gpio3_base = ioremap(GPIO3_BASE_ADDR, SZ_4K);
+	gpio3_base = ioremap(GPIO3_BASE_ADDR, SZ_4K); // Bad practice, don't do this.
 
 	void __iomem *gpio2_base;
-	gpio2_base = ioremap(GPIO2_BASE_ADDR, SZ_4K);
+	gpio2_base = ioremap(GPIO2_BASE_ADDR, SZ_4K); // Bad practice, don't do this.
 
 	while(__raw_readl(elcdif_base + HW_ELCDIF_CTRL) & BM_ELCDIF_CTRL_RUN);
 	// set pins as GPIO outputs, all ones
@@ -338,6 +333,9 @@ static int lcdif_read(u16 reg, u16 *rbuf, int rlen)
 	set_lcd_pads();
 
 	instance->gpio_read_sem = 0;
+
+	iounmap(gpio2_base); // Bad practice, don't do this.
+	iounmap(gpio3_base); // Bad practice, don't do this.
 
 	return 0;
 }

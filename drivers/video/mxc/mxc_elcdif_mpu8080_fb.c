@@ -133,7 +133,7 @@ static int mxc_elcdif_fb_map_video_memory(struct fb_info *info);
 static int mxc_elcdif_fb_unmap_video_memory(struct fb_info *info);
 static char *fb_mode;
 static unsigned long default_bpp = 32; // REVO changed from 16 to 24
-static void __iomem *elcdif_base;
+void __iomem *elcdif_base;
 static struct device *g_elcdif_dev;
 static bool g_elcdif_axi_clk_enable;
 static bool g_elcdif_pix_clk_enable;

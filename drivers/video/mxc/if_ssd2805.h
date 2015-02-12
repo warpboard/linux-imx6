@@ -36,4 +36,6 @@ int mipi_dcs_command(int cmd);
 int mipi_dcs_write(int cmd, u8 *wbuf, int wlen);
 int mipi_dcs_read(int cmd, u8 *rbuf, int rlen);
 
+extern void __iomem *elcdif_base;
+
 #endif
