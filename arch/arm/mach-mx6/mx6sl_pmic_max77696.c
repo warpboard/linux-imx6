@@ -320,10 +320,10 @@ static struct max77696_gauge_config max77696_gauge_config_870_1_041312 = {
     .qrtbl20 =          0x0680,
     .qrtbl30 =          0x0501,
     .cycles =           0x0060,
-    .fullcap =          0x0704,
-    .design_cap =       0x0704,
-    .fullcapnom =       0x0704,
-    .batt_cap =         0x0704,
+    .fullcap =          0x02BC,
+    .design_cap =       0x02BC,
+    .fullcapnom =       0x02BC,
+    .batt_cap =         0x02BC,
     .cell_char_tbl = {
         /* 0x80 */
         0xA8D0, 0xB680, 0xB960, 0xBB80, 0xBBE0, 0xBC30, 0xBD50, 0xBE20,
@@ -493,8 +493,8 @@ static struct max77696_platform_data max77696_pdata = {
 #ifdef CONFIG_SENSORS_MAX77696
     .adc_pdata = {
         .print_fmt = MAX77696_ADC_PRINT_FULL,
-        .avg_rate  = 0, /*    1 ~    32 samples, 0 means minimum */
-        .adc_delay = 0, /* 1000 ~ 16500 nsec,    0 means minimum */
+        .avg_rate  = 1, /*    1 ~    32 samples, 0 means minimum */
+        .adc_delay = 1000, /* 1000 ~ 16500 nsec,    0 means minimum */
     },
 #endif /* CONFIG_SENSORS_MAX77696 */
 
@@ -511,7 +511,7 @@ static struct max77696_platform_data max77696_pdata = {
         .s_alert_min                       = 0,
         .enable_alert_on_battery_removal   = 0,
         .enable_alert_on_battery_insertion = 0,
-        .charge_full_design                = 898*1000, /* in uAh */
+        .charge_full_design                = 350*1000, /* in uAh */
         .battery_full_capacity             = 95,       /* in % */
         .r_sns                             = 10000,    /* SENSE_RESISTOR = 10mOhm */
         .update_interval_ms                = 5000,
