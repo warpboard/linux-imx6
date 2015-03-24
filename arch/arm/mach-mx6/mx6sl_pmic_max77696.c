@@ -608,9 +608,9 @@ static struct max77696_platform_data max77696_pdata = {
         .batteries              = max77696_batteries,
         .num_batteries          = ARRAY_SIZE(max77696_batteries),
 #endif /* CONFIG_BATTERY_MAX77696 */
-        .initial_mode           = MAX77696_EH_MODE_AUTODETECT,
+        .initial_mode           = MAX77696_EH_MODE_CHARGER,
         .detect_interval_ms     = 1000, /* in msecs */
-        .acc_det_gpio           = CONFIG_MFD_MAX77696_GPIO_BASE+0,
+        .acc_det_gpio           = 0,    // CONFIG_MFD_MAX77696_GPIO_BASE+0,
         .acc_det_gpio_assert    = 0,    /* active low */
         .acc_det_debounce_ms    = 100,  /* in msec */
         .acc_ilimit             = 400,  /* in mA */
