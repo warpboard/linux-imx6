@@ -1232,6 +1232,8 @@ static __devinit int max77696_charger_probe (struct platform_device *pdev)
         max77696_charger_wdt_en_set(me, 0);
     }
 
+    max77696_charger_update_state(me, 1);
+
     pr_info(DRIVER_DESC" "DRIVER_VERSION" Installed\n");
     return 0;
 
