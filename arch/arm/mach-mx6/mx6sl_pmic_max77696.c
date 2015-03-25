@@ -516,8 +516,11 @@ static struct max77696_platform_data max77696_pdata = {
         .r_sns                             = 10000,    /* SENSE_RESISTOR = 10mOhm */
         .update_interval_ms                = 5000,
         .polling_properties                =
-            MAX77696_GAUGE_POLLING_CAPACITY|
-            MAX77696_GAUGE_POLLING_TEMP,
+            MAX77696_GAUGE_POLLING_CAPACITY |
+            MAX77696_GAUGE_POLLING_TEMP |
+            MAX77696_GAUGE_POLLING_VOLTAGE_NOW |
+            MAX77696_GAUGE_POLLING_CURRENT_NOW |
+            MAX77696_GAUGE_POLLING_CHARGE_NOW,
 
         /* Must select one of both CONFIG_LEDS_TRIGGERS and
         * GAUGE_SUPPORTS_LEDS_TRIGGERS
