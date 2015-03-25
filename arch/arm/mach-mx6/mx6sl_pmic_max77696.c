@@ -33,7 +33,7 @@
 #include <linux/mfd/max77696.h>
 
 #define CONFIG_MFD_MAX77696_I2C_BUS        0
-#define CONFIG_MFD_MAX77696_IRQ            0
+#define CONFIG_MFD_MAX77696_IRQ            342
 #define CONFIG_MFD_MAX77696_IRQ_BASE       250
 #define CONFIG_MFD_MAX77696_GPIO_BASE      250
 
