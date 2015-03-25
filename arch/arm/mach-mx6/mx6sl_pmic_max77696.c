@@ -357,20 +357,20 @@ static struct max77696_platform_data max77696_pdata = {
     },
 
 #ifdef CONFIG_GPIO_MAX77696
-/* TODO: configure GPIO for SSD2805 settings
+// TODO: configure GPIO for SSD2805 settings
     .gpio_pdata = {
         .irq_base  = CONFIG_MFD_MAX77696_IRQ_BASE+MAX77696_GPIO_IRQ_OFFSET,
         .gpio_base = CONFIG_MFD_MAX77696_GPIO_BASE,
         .bias_en   = 1,
         .init_data = {
-            MAX77696_GPIO_INIT_INPUT (0, STDGPIO, 0, 0, 32, NONE),
-            MAX77696_GPIO_INIT_NC    (1                         ),
-            MAX77696_GPIO_INIT_NC    (2                         ),
-            MAX77696_GPIO_INIT_INPUT (3, STDGPIO, 0, 0,  0, NONE),
-            MAX77696_GPIO_INIT_NC    (4                         ),
+//            MAX77696_GPIO_INIT_INPUT (0, STDGPIO, 0, 0, 32, NONE),
+//            MAX77696_GPIO_INIT_NC    (1                         ),
+//            MAX77696_GPIO_INIT_NC    (2                         ),
+//            MAX77696_GPIO_INIT_INPUT (3, STDGPIO, 0, 0,  0, NONE),
+//            MAX77696_GPIO_INIT_NC    (4                         ),
         },
     },
-*/
+
 #endif /* CONFIG_GPIO_MAX77696 */
 
 #ifdef CONFIG_WATCHDOG_MAX77696
