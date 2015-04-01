@@ -1066,6 +1066,14 @@ static void __init bcmdhd_init(void)
 }
 #endif  /* BRCM WLAN modifications */
 
+int max77696_pmic_gpio_init(void)
+{
+	int ret = 0;
+	gpio_request(IMX_GPIO_NR(3,22), "max77696-irq");
+	gpio_direction_input(IMX_GPIO_NR(3,22));
+	return ret;
+}
+
 /*!
  * Board specific initialization.
  */
@@ -1077,6 +1085,8 @@ static void __init mx6_warp_init(void)
 					ARRAY_SIZE(mx6sl_brd_pads));
 	mxc_iomux_v3_setup_multiple_pads(warp_brd_pads,
 					ARRAY_SIZE(warp_brd_pads));
+
+	max77696_pmic_gpio_init();
 
 //	mxc_iomux_v3_setup_multiple_pads(mcu8080display_pads,ARRAY_SIZE(mcu8080display_pads));
 
