@@ -573,6 +573,9 @@ static __devinit int max77696_uic_probe (struct platform_device *pdev)
     irq_bits = (UIC_INT1_VBVOLT|UIC_INT1_CHGTYP);
     max77696_uic_enable_irq(me, irq_bits, 0);
 
+    // Initial update of UIC/Charger status
+    max77696_uic_psy_work((struct work_struct *) &(me->psy_work));
+
     pr_info(DRIVER_DESC" "DRIVER_VERSION" Installed\n");
     return 0;
 
