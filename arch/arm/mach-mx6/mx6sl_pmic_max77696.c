@@ -626,10 +626,10 @@ static struct max77696_platform_data max77696_pdata = {
         .wakeup_1sec_delayed_since_onkey_down = 0,  /* See EN0DLY in GLBLCNFG1 */
         .wakeup_after_mrwrn                   = 0,
         .wakeup_after_mro                     = 1,  /* See MROWK in GLBLCNFG2 */
-        .manual_reset_time                    = 2, /* in seconds */
+        .manual_reset_time                    = 6, /* in seconds */
         .onkey_keycode                        = KEY_POWER,
-        .hold_1sec_keycode                    = KEY_POWER,
-        .mr_warn_keycode                      = KEY_POWER,
+        .hold_1sec_keycode                    = KEY_POWER, // disabled in max77696-onkey.c
+        .mr_warn_keycode                      = KEY_POWER, // disabled in max77696-onkey.c
     },
 #endif /* CONFIG_INPUT_MAX77696_ONKEY */
 };

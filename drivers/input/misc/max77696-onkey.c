@@ -69,12 +69,12 @@ static irqreturn_t max77696_onkey_down_isr (int irq, void *data)
     struct max77696_onkey *me = data;
     int i;
 
-    for (i = 0; i < ONKEY_NR_KEYS; i++) {
-        if (likely(me->keycode[i] < KEY_MAX)) {
-            me->pressed[i] = 1;
-            input_report_key(me->input, me->keycode[i], KEY_DOWN_VALUE);
-            input_sync(me->input);
-        }
+	dev_dbg(me->dev, "ONKEY_DOWN_ISR\n");
+
+    if (likely(me->keycode[ONKEY_KEY_EN0] < KEY_MAX )) {
+        me->pressed[ONKEY_KEY_EN0] = 1;
+        input_report_key(me->input, me->keycode[ONKEY_KEY_EN0], KEY_DOWN_VALUE);
+        input_sync(me->input);
     }
 
     return IRQ_HANDLED;
@@ -84,11 +84,7 @@ static irqreturn_t max77696_onkey_1sec_isr (int irq, void *data)
 {
     struct max77696_onkey *me = data;
 
-    if (likely(me->keycode[ONKEY_KEY_1SEC] < KEY_MAX)) {
-        me->pressed[ONKEY_KEY_1SEC] = 0;
-        input_report_key(me->input, me->keycode[ONKEY_KEY_1SEC], KEY_UP_VALUE);
-        input_sync(me->input);
-    }
+    dev_dbg(me->dev, "ONKEY_1SEC_ISR\n");
 
     return IRQ_HANDLED;
 }
@@ -97,11 +93,7 @@ static irqreturn_t max77696_onkey_mrwrn_isr (int irq, void *data)
 {
     struct max77696_onkey *me = data;
 
-    if (likely(me->keycode[ONKEY_KEY_MRWRN] < KEY_MAX)) {
-        me->pressed[ONKEY_KEY_MRWRN] = 0;
-        input_report_key(me->input, me->keycode[ONKEY_KEY_MRWRN], KEY_UP_VALUE);
-        input_sync(me->input);
-    }
+    dev_dbg(me->dev, "ONKEY_MRWRN_ISR\n");
 
     return IRQ_HANDLED;
 }
@@ -111,12 +103,12 @@ static irqreturn_t max77696_onkey_up_isr (int irq, void *data)
     struct max77696_onkey *me = data;
     int i;
 
-    for (i = ONKEY_NR_KEYS-1; i >= 0; i--) {
-        if (likely(me->keycode[i] < KEY_MAX && likely(me->pressed[i]))) {
-            me->pressed[i] = 0;
-            input_report_key(me->input, me->keycode[i], KEY_UP_VALUE);
-            input_sync(me->input);
-        }
+    dev_dbg(me->dev, "ONKEY_UP_ISR\n");
+
+    if (likely(me->keycode[ONKEY_KEY_EN0] < KEY_MAX && likely(me->pressed[ONKEY_KEY_EN0]))) {
+        me->pressed[ONKEY_KEY_EN0] = 0;
+        input_report_key(me->input, me->keycode[ONKEY_KEY_EN0], KEY_UP_VALUE);
+        input_sync(me->input);
     }
 
     return IRQ_HANDLED;
@@ -204,7 +196,7 @@ static __devinit int max77696_onkey_probe (struct platform_device *pdev)
     }
 
     rc = request_threaded_irq(me->irq[ONKEY_KEY_EN0],
-        NULL, max77696_onkey_up_isr, IRQF_ONESHOT, DRIVER_NAME".en0up", me);
+        NULL, max77696_onkey_down_isr, IRQF_ONESHOT, DRIVER_NAME".en0down", me);
 
     if (unlikely(rc < 0)) {
         dev_err(me->dev, "failed to request IRQ(%d) [%d]\n",
@@ -213,7 +205,7 @@ static __devinit int max77696_onkey_probe (struct platform_device *pdev)
     }
 
     rc = request_threaded_irq(me->dben0_irq,
-        NULL, max77696_onkey_down_isr, IRQF_ONESHOT, DRIVER_NAME".en0down", me);
+        NULL, max77696_onkey_up_isr, IRQF_ONESHOT, DRIVER_NAME".en0up", me);
 
     if (unlikely(rc < 0)) {
         dev_err(me->dev, "failed to request IRQ(%d) [%d]\n",
