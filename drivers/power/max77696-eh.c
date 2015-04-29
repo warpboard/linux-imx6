@@ -795,6 +795,7 @@ static __devinit int max77696_eh_probe (struct platform_device *pdev)
     max77696_eh_mode_set(me, pdata->initial_mode);
     max77696_eh_acc_ilm_set(me, pdata->acc_ilimit);
     max77696_eh_mbcichfc_set(me, false, 450);
+    max77696_eh_mbccv_set(me, pdata->cv_level);
 
     /* Disable all EH interrupts */
     max77696_eh_disable_irq(me, 0xFF, 1);

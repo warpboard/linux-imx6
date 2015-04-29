@@ -617,6 +617,7 @@ static struct max77696_platform_data max77696_pdata = {
         .acc_det_gpio_assert    = 0,    /* active low */
         .acc_det_debounce_ms    = 100,  /* in msec */
         .acc_ilimit             = 400,  /* in mA */
+        .cv_level               = 4200, /* in mV */
         .charger_notify         = max77696_eh_notify_def_cb,
         .accessory_notify       = NULL,
     },

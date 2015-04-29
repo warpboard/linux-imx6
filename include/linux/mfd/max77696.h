@@ -625,6 +625,7 @@ struct max77696_eh_platform_data {
     int            acc_det_gpio_assert; /* HIGH(1) or LOW (0) */
     unsigned int   acc_det_debounce_ms;
     int            acc_ilimit;
+    int            cv_level;
 
     void           (*charger_notify) (struct power_supply *psy,
         bool online, bool enable);
