@@ -89,7 +89,7 @@
 static void mx6sl_warp_suspend_enter(void);
 static void mx6sl_warp_suspend_exit(void);
 
-/* Additional Defines for BRCM WLAN */
+// Additional Defines for BRCM WLAN
 #define BRCM 1
 
 static struct ion_platform_data imx_ion_data = {
@@ -280,6 +280,58 @@ static struct viv_gpu_platform_data imx6q_gpu_pdata __initdata = {
 };
 
 void __init early_console_setup(unsigned long base, struct clk *clk);
+
+#ifdef MURATA_BLUETOOTH_ENABLE
+static const struct imxuart_platform_data mx6sl_warp_uart2_data __initconst = {
+//	.flags      = IMXUART_HAVE_RTSCTS,
+	.dma_req_rx = MX6Q_DMA_REQ_UART2_RX,
+	.dma_req_tx = MX6Q_DMA_REQ_UART2_TX,
+};
+
+static int uart2_enabled=0;
+static int __init uart2_setup(char * __unused)
+{
+	uart2_enabled = 1;
+	return 1;
+}
+__setup("bluetooth", uart2_setup);
+
+static void __init uart2_init(void)
+{
+	mxc_iomux_v3_setup_multiple_pads(mx6sl_uart2_pads,
+					ARRAY_SIZE(mx6sl_uart2_pads));
+	// uart2 data NULL to workaround board rev1.10 CTS/RTS issue
+	imx6sl_add_imx_uart(1, NULL); //&mx6sl_warp_uart2_data);
+}
+
+static void mx6sl_warp_bt_reset(void)
+{
+	/* Toggle BT_RST_N; drive low and then drive high again */
+	gpio_request(WARP_BT_RST_N, "bt-rst-n");
+	gpio_direction_output(WARP_BT_RST_N, 0);
+	/* pull down BT_RST_N pin at least >10ms */
+	mdelay(10);
+	/* now drive BT_RST_N high */
+	gpio_set_value(WARP_BT_RST_N, 1);
+	gpio_free(WARP_BT_RST_N);
+}
+
+static int mx6sl_warp_bt_power_change(int status)
+{
+	if (status)
+		mx6sl_warp_bt_reset();
+	return 0;
+}
+
+static struct platform_device mxc_bt_rfkill = {
+	.name = "mxc_bt_rfkill",
+};
+
+static struct imx_bt_rfkill_platform_data mxc_bt_rfkill_data = {
+	.power_change = mx6sl_warp_bt_power_change,
+};
+
+#endif /* MURATA_BLUETOOTH_ENABLE */
 
 static inline void uart1_init(void)
 {
@@ -531,6 +583,20 @@ static void __init mx6_warp_init(void)
 	imx6dl_add_imx_pxp_client();
 
 	uart3_init();
+
+#ifdef MURATA_BLUETOOTH_ENABLE
+	uart2_init();
+
+	/* Drive BT_REG_ON high to ensure BT core is not held in reset. */ 
+	gpio_request(WARP_BT_REG_ON, "bt-reg-on");
+	gpio_direction_output(WARP_BT_REG_ON, 1);
+	gpio_free(WARP_BT_REG_ON);
+	mdelay(100);  /* delay to let BT core out of reset */
+
+	/* setup "handle" for BT stack to (un)reset BT core with BT_RST_N */ 
+	mxc_register_device(&mxc_bt_rfkill, &mxc_bt_rfkill_data);
+
+#endif /* MURATA_BLUETOOTH_ENABLE */
 
 	imx_add_viv_gpu(&imx6_gpu_data, &imx6q_gpu_pdata);
 	imx6sl_add_imx_pxp_v4l2();
