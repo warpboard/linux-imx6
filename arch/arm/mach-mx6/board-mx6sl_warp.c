@@ -83,7 +83,6 @@
 #include "devices-imx6q.h"
 #include "crm_regs.h"
 #include "cpu_op-mx6.h"
-#include "board-mx6sl_common.h"
 #include "board-mx6sl_warp.h"
 
 
@@ -472,8 +471,6 @@ int max77696_pmic_gpio_init(void)
  */
 static void __init mx6_warp_init(void)
 {
-	mxc_iomux_v3_setup_multiple_pads(mx6sl_brd_pads,
-					ARRAY_SIZE(mx6sl_brd_pads));
 	mxc_iomux_v3_setup_multiple_pads(warp_brd_pads,
 					ARRAY_SIZE(warp_brd_pads));
 

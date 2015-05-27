@@ -45,6 +45,10 @@
 
 #define ELCDIF_PHY_BASE_ADDR 0x020f8000
 
+#define MX6_BRD_ECSPI1_CS0	IMX_GPIO_NR(4, 11)	/* ECSPI1_SS0 */
+#define MX6_BRD_SD2_WP		IMX_GPIO_NR(4, 29)	/* SD2_DAT6 */
+#define MX6_BRD_SD2_CD		IMX_GPIO_NR(5, 0)	/* SD2_DAT7 */
+
 // LCD Interface GPIO definitions for GPIO CMD read mode
 #define PINID_LCD_DAT0		IMX_GPIO_NR(2, 20)
 #define PINID_LCD_DAT1		IMX_GPIO_NR(2, 21)
@@ -105,6 +109,45 @@
 
 static iomux_v3_cfg_t warp_brd_pads[] = {
 
+	MX6SL_PAD_UART1_RXD__UART1_RXD,
+	MX6SL_PAD_UART1_TXD__UART1_TXD,
+
+	MX6SL_PAD_SD2_CLK__USDHC2_CLK_50MHZ,
+	MX6SL_PAD_SD2_CMD__USDHC2_CMD_50MHZ,
+	MX6SL_PAD_SD2_DAT0__USDHC2_DAT0_50MHZ,
+	MX6SL_PAD_SD2_DAT1__USDHC2_DAT1_50MHZ,
+	MX6SL_PAD_SD2_DAT2__USDHC2_DAT2_50MHZ,
+	MX6SL_PAD_SD2_DAT3__USDHC2_DAT3_50MHZ,
+	MX6SL_PAD_SD2_DAT4__USDHC2_DAT4_50MHZ,
+	MX6SL_PAD_SD2_DAT5__USDHC2_DAT5_50MHZ,
+	MX6SL_PAD_SD2_DAT6__USDHC2_DAT6_50MHZ,
+	MX6SL_PAD_SD2_DAT7__USDHC2_DAT7_50MHZ,
+	MX6SL_PAD_SD2_RST__USDHC2_RST,
+
+	MX6SL_PAD_SD3_CLK__USDHC3_CLK_50MHZ,
+	MX6SL_PAD_SD3_CMD__USDHC3_CMD_50MHZ,
+	MX6SL_PAD_SD3_DAT0__USDHC3_DAT0_50MHZ,
+	MX6SL_PAD_SD3_DAT1__USDHC3_DAT1_50MHZ,
+	MX6SL_PAD_SD3_DAT2__USDHC3_DAT2_50MHZ,
+	MX6SL_PAD_SD3_DAT3__USDHC3_DAT3_50MHZ,
+
+	/* Murata LBEH17YSHC GPIO */
+	MX6SL_PAD_KEY_COL2__GPIO_3_28,	// BT_REG_ON
+	MX6SL_PAD_KEY_ROW6__GPIO_4_5,	// WL_REG_ON
+	MX6SL_PAD_KEY_COL7__GPIO_4_6,	// BT_RST_N
+	MX6SL_PAD_KEY_ROW7__GPIO_4_7,	// GPIO0_WL_HOSTWAKE
+
+	/* I2C */
+	MX6SL_PAD_I2C1_SCL__I2C1_SCL,
+	MX6SL_PAD_I2C1_SDA__I2C1_SDA,
+
+	/* ECSPI2 */
+	MX6SL_PAD_ECSPI2_MISO__ECSPI2_MISO,
+	MX6SL_PAD_ECSPI2_MOSI__ECSPI2_MOSI,
+	MX6SL_PAD_ECSPI2_SCLK__ECSPI2_SCLK,
+	MX6SL_PAD_ECSPI2_SS0__GPIO_4_15,	/* SS0 */
+
+
 // ALT pads for touchscreen with off-board connector on 1.0d boards
 //	NEW_PAD_CTRL(MX6SL_PAD_AUD_RXC__I2C3_SDA,	WARP_I2C_PAD_CTRL_3V),
 //	NEW_PAD_CTRL(MX6SL_PAD_AUD_RXFS__I2C3_SCL,	WARP_I2C_PAD_CTRL_3V),
@@ -160,6 +203,7 @@ static iomux_v3_cfg_t mx6sl_uart3_pads[] = {
 	NEW_PAD_CTRL(MX6SL_PAD_AUD_RXFS__UART3_RXD, MX6SL_UART_PAD_CTRL),
 };
 
+#ifdef LCDIF_GPIO_READ
 // Pad definitions to switch between GPIO Read and normal LCDIF interface mode
 static iomux_v3_cfg_t mcu8080display_pads[] = {
 	NEW_PAD_CTRL(MX6SL_PAD_LCD_DAT0__LCDIF_DAT_0, 	WARP_LCD_PAD_CTRL),
@@ -223,7 +267,9 @@ static iomux_v3_cfg_t mcu8080display_gpio_pads[] = {
 	NEW_PAD_CTRL(MX6SL_PAD_LCD_DAT21__GPIO_3_9,	WARP_LCD_PAD_CTRL),	// MIPI_B_SYNC
 	NEW_PAD_CTRL(MX6SL_PAD_LCD_DAT22__GPIO_3_10,	WARP_LCD_PAD_CTRL),	// MIPI_RSTn
 };
+#endif
 // End GPIO Read pad definitions
+
 
 static iomux_v3_cfg_t warp_suspend_enter_pads[] = {
 };
@@ -231,6 +277,37 @@ static iomux_v3_cfg_t warp_suspend_enter_pads[] = {
 static iomux_v3_cfg_t warp_suspend_exit_pads[] = {
 };
 
+#define MX6SL_USDHC_8BIT_PAD_SETTING(id, speed)	\
+mx6sl_sd##id##_##speed##mhz[] = {		\
+	MX6SL_PAD_SD##id##_CLK__USDHC##id##_CLK_##speed##MHZ,	\
+	MX6SL_PAD_SD##id##_CMD__USDHC##id##_CMD_##speed##MHZ,	\
+	MX6SL_PAD_SD##id##_DAT0__USDHC##id##_DAT0_##speed##MHZ,	\
+	MX6SL_PAD_SD##id##_DAT1__USDHC##id##_DAT1_##speed##MHZ,	\
+	MX6SL_PAD_SD##id##_DAT2__USDHC##id##_DAT2_##speed##MHZ,	\
+	MX6SL_PAD_SD##id##_DAT3__USDHC##id##_DAT3_##speed##MHZ,	\
+	MX6SL_PAD_SD##id##_DAT4__USDHC##id##_DAT4_##speed##MHZ,	\
+	MX6SL_PAD_SD##id##_DAT5__USDHC##id##_DAT5_##speed##MHZ,	\
+	MX6SL_PAD_SD##id##_DAT6__USDHC##id##_DAT6_##speed##MHZ,	\
+	MX6SL_PAD_SD##id##_DAT7__USDHC##id##_DAT7_##speed##MHZ,	\
+}
+#define MX6SL_USDHC_4BIT_PAD_SETTING(id, speed)	\
+mx6sl_sd##id##_##speed##mhz[] = {		\
+	MX6SL_PAD_SD##id##_CLK__USDHC##id##_CLK_##speed##MHZ,	\
+	MX6SL_PAD_SD##id##_CMD__USDHC##id##_CMD_##speed##MHZ,	\
+	MX6SL_PAD_SD##id##_DAT0__USDHC##id##_DAT0_##speed##MHZ,	\
+	MX6SL_PAD_SD##id##_DAT1__USDHC##id##_DAT1_##speed##MHZ,	\
+	MX6SL_PAD_SD##id##_DAT2__USDHC##id##_DAT2_##speed##MHZ,	\
+	MX6SL_PAD_SD##id##_DAT3__USDHC##id##_DAT3_##speed##MHZ,	\
+}
 
+static iomux_v3_cfg_t MX6SL_USDHC_8BIT_PAD_SETTING(1, 50);
+static iomux_v3_cfg_t MX6SL_USDHC_8BIT_PAD_SETTING(1, 100);
+static iomux_v3_cfg_t MX6SL_USDHC_8BIT_PAD_SETTING(1, 200);
+static iomux_v3_cfg_t MX6SL_USDHC_4BIT_PAD_SETTING(2, 50);
+static iomux_v3_cfg_t MX6SL_USDHC_4BIT_PAD_SETTING(2, 100);
+static iomux_v3_cfg_t MX6SL_USDHC_4BIT_PAD_SETTING(2, 200);
+static iomux_v3_cfg_t MX6SL_USDHC_4BIT_PAD_SETTING(3, 50);
+static iomux_v3_cfg_t MX6SL_USDHC_4BIT_PAD_SETTING(3, 100);
+static iomux_v3_cfg_t MX6SL_USDHC_4BIT_PAD_SETTING(3, 200);
 
 #endif
