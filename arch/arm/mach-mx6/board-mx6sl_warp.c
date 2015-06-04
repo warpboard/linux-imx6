@@ -89,6 +89,9 @@
 static void mx6sl_warp_suspend_enter(void);
 static void mx6sl_warp_suspend_exit(void);
 
+extern char *gp_reg_id;
+extern char *soc_reg_id;
+
 // Additional Defines for BRCM WLAN
 #define BRCM 1
 
@@ -273,6 +276,30 @@ static struct i2c_board_info mxc_i2c2_board_info[] __initdata = {
 		I2C_BOARD_INFO("ft5x06-ts", 0x38),
 		.irq = gpio_to_irq(PINID_FT5X06_INT),
 	}
+};
+
+static struct mxc_dvfs_platform_data mx6sl_dvfscore_data = {
+	.reg_id			= "VDDCORE",
+	.soc_id			= "VDDSOC",
+	.clk1_id		= "cpu_clk",
+	.clk2_id		= "gpc_dvfs_clk",
+	.gpc_cntr_offset	= MXC_GPC_CNTR_OFFSET,
+	.ccm_cdcr_offset	= MXC_CCM_CDCR_OFFSET,
+	.ccm_cacrr_offset	= MXC_CCM_CACRR_OFFSET,
+	.ccm_cdhipr_offset	= MXC_CCM_CDHIPR_OFFSET,
+	.prediv_mask		= 0x1F800,
+	.prediv_offset		= 11,
+	.prediv_val		= 3,
+	.div3ck_mask		= 0xE0000000,
+	.div3ck_offset		= 29,
+	.div3ck_val		= 2,
+	.emac_val		= 0x08,
+	.upthr_val		= 25,
+	.dnthr_val		= 9,
+	.pncthr_val		= 33,
+	.upcnt_val		= 10,
+	.dncnt_val		= 10,
+	.delay_time		= 80,
 };
 
 static struct viv_gpu_platform_data imx6q_gpu_pdata __initdata = {
@@ -545,6 +572,9 @@ static void __init mx6_warp_init(void)
 
 	max77696_pmic_gpio_init();
 
+	gp_reg_id = mx6sl_dvfscore_data.reg_id;
+	soc_reg_id = mx6sl_dvfscore_data.soc_id;
+
 	gpio_request(PINID_MIPI_TE,    "lcd_te");	// MIPI_TE
 	gpio_request(PINID_LCD_INTN,   "lcd_intn");	// LCD_INTn
 	gpio_request(PINID_LCD_RD,     "lcd_rd"); 	// LCD_RDX
@@ -574,6 +604,8 @@ static void __init mx6_warp_init(void)
 	imx6q_add_ecspi(1, &warp_spi2_data);
 	spi_device_init();
 
+	imx6q_add_anatop_thermal_imx(1, &mx6sl_anatop_thermal_data);
+
 	uart1_init();
 
 	imx6q_add_sdhci_usdhc_imx(1, &mx6_warp_sd2_data);
@@ -598,6 +630,8 @@ static void __init mx6_warp_init(void)
 	mxc_register_device(&lcd_lh154_device, NULL);
 	imx6dl_add_imx_pxp();
 	imx6dl_add_imx_pxp_client();
+
+	imx6q_add_dvfs_core(&mx6sl_dvfscore_data);
 
 	uart3_init();
 #ifdef MURATA_BLUETOOTH_ENABLE
@@ -633,11 +667,17 @@ static void __init mx6_warp_init(void)
 #endif /* MURATA_BLUETOOTH_ENABLE */
 
 	imx_add_viv_gpu(&imx6_gpu_data, &imx6q_gpu_pdata);
+	imx6q_add_busfreq();
+	imx6sl_add_dcp();
+	imx6sl_add_rngb();
 	imx6sl_add_imx_pxp_v4l2();
 
 	imx6q_add_perfmon(0);
 	imx6q_add_perfmon(1);
 	imx6q_add_perfmon(2);
+
+	pm_power_off = mx6_snvs_poweroff;
+	imx6q_add_pm_imx(0, &mx6sl_warp_pm_data);
 
 	if (imx_ion_data.heaps[0].size)
 		platform_device_register_resndata(NULL, "ion-mxc", 0, NULL, 0, \
