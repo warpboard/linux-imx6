@@ -134,10 +134,6 @@ static __inline int max77696_bl_set (struct max77696_bl *me, int brightness)
     brightness = min_t(int, MAX_BRIGHTNESS, brightness);
     brightness = max_t(int, MIN_BRIGHTNESS, brightness);
 
-    if (unlikely(me->brightness == brightness)) {
-        goto out;
-    }
-
     if (unlikely(brightness <= MIN_BRIGHTNESS)) {
         rc = max77696_bl_enable(me, 0);
         goto out;
