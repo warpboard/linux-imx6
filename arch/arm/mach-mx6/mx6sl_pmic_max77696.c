@@ -394,14 +394,14 @@ static struct max77696_platform_data max77696_pdata = {
         /*                 id                           min_uV           apply_uV  always_on
                                   name                          max_uV      boot_on
                            --------------------------------------------------------*/
-        MAX77696_BUCK_INIT(B1,    "max77696_buck1",     725000, 1300000, 0, 1,     1),
+        MAX77696_BUCK_INIT(B1,    "max77696_buck1",     725000, 1300000, 1, 1,     0),
         MAX77696_BUCK_INIT(B1DVS, "max77696_buck1dvs",  600000, 1300000, 0, 0,     0),
         MAX77696_BUCK_INIT(B2,    "max77696_buck2",     725000, 1300000, 0, 0,     0),
         MAX77696_BUCK_INIT(B2DVS, "max77696_buck2dvs",  600000, 1300000, 0, 0,     0),
         MAX77696_BUCK_INIT(B3,    "max77696_buck3",     600000, 3387500, 0, 0,     0),
-        MAX77696_BUCK_INIT(B4,    "max77696_buck4",    1200000, 1200000, 1, 1,     1),
-        MAX77696_BUCK_INIT(B5,    "max77696_buck5",    1800000, 1800000, 0, 0,     1),
-        MAX77696_BUCK_INIT(B6,    "max77696_buck6",    3000000, 3000000, 0, 0,     1),
+        MAX77696_BUCK_INIT(B4,    "max77696_buck4",    1200000, 1200000, 1, 1,     0),
+        MAX77696_BUCK_INIT(B5,    "max77696_buck5",    1800000, 1800000, 1, 1,     0),
+        MAX77696_BUCK_INIT(B6,    "max77696_buck6",    2900000, 2900000, 1, 1,     0),
     },
     .ldo_pdata = {
         .imon_tf = MAX77696_LDO_IMON_TF_1000_OHM,
