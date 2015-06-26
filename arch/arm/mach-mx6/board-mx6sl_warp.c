@@ -445,14 +445,40 @@ static struct platform_device lcd_lh154_device = {
 
 
 #define SNVS_LPCR 0x38
+static unsigned char pmic_powerdown_mode=0x20;
+static int pmic_powerdown_setup(char * __unused)
+{
+	pmic_powerdown_mode = 0x04;
+	return 1;
+}
+__setup("pmic_usefullshutdown", pmic_powerdown_setup);
+
 static void mx6_snvs_poweroff(void)
 {
 	u32 value;
 	void __iomem *mx6_snvs_base = MX6_IO_ADDRESS(MX6Q_SNVS_BASE_ADDR);
 
+	if(pmic_powerdown_mode == 0x20)
+		printk(KERN_INFO "Removing power. VSYS1 going off.\n");
+	else if(pmic_powerdown_mode == 0x04)
+		printk(KERN_INFO "Removing power. Leaving VSYS1 on. \n");
+
+
 	value = readl(mx6_snvs_base + SNVS_LPCR);
 	/* set TOP and DP_EN bit */
 	writel(value | 0x60, mx6_snvs_base + SNVS_LPCR);
+
+
+	// Disable RTC Alarm and set UIC_WK to edge triggered
+	max77696_chip_write(0,0x02,0x31);
+
+	// Disable Backlight
+	max77696_chip_write(0,0x6C,0x00);
+
+	// Enter Factory Ship (turn off all power including SYS1)
+	max77696_chip_write(0,0,0x01);
+	max77696_chip_write(0,0,pmic_powerdown_mode);
+
 }
 
 static void __init uart3_init(void){
