@@ -474,6 +474,14 @@ config LEDS_MAX8997
 	  This option enables support for on-chip LED drivers on
 	  MAXIM MAX8997 PMIC.
 
+config LEDS_MAX77696
+	tristate "LED Support for MAX77696 PMIC"
+	depends on LEDS_CLASS
+	depends on MFD_MAX77696
+	help
+	  This option enable support for on-chip LED drivers found
+	  on Maxim Integrated MAX77696 PMIC.
+
 config LEDS_LM355x
 	tristate "LED support for LM355x Chips, LM3554 and LM3556"
 	depends on LEDS_CLASS && I2C

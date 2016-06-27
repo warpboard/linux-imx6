@@ -544,6 +544,36 @@ config MFD_MAX8998
 	  additional drivers must be enabled in order to use the functionality
 	  of the device.
 
+config MFD_MAX77696
+        bool "Maxim Integrated MAX77696 PMIC Support"
+        depends on I2C=y
+        select MFD_CORE
+        help
+          Say yes here to support for Maxim MAX77696 Power Management IC.
+          This driver provides common support for accessing the device,
+          additional drivers must be enabled in order to use the functionality
+          of the device.
+
+choice
+        prompt "Maxim Integrated MAX77696 PMIC Family"
+        depends on MFD_MAX77696
+        default MAX77696
+
+config MAX77696
+        bool "MAX77696"
+
+config MAX77697
+        bool "MAX77697"
+
+config MAX77796
+        bool "MAX77796"
+
+endchoice
+
+config MFD_MAX77696_DBG
+        bool "MAX77696 debug support"
+        depends on MFD_MAX77696
+
 config MFD_MT6397
 	tristate "MediaTek MT6397 PMIC Support"
 	select MFD_CORE

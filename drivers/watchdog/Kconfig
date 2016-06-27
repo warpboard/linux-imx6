@@ -140,6 +140,14 @@ config XILINX_WATCHDOG
 	  To compile this driver as a module, choose M here: the
 	  module will be called of_xilinx_wdt.
 
+config MAX77696_WATCHDOG
+	tristate "MAX77696 watchdog"
+	depends on MFD_MAX77696
+	select WATCHDOG_CORE
+	help
+	  Support for the watchdog in the MAX77696 PMIC. When the watchdog
+	  triggers the system will be reset.
+
 # ALPHA Architecture
 
 # ARM Architecture

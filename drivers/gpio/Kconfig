@@ -567,6 +567,12 @@ config GPIO_MAX732X
 	  Board setup code must specify the model to use, and the start
 	  number for these GPIOs.
 
+config GPIO_MAX77696
+	bool "MAX77696 GPIO"
+	depends on MFD_MAX77696
+	help
+	  Say Y here to support Maxim MAX77696 GPIO.
+
 config GPIO_MAX732X_IRQ
 	bool "Interrupt controller support for MAX732x"
 	depends on GPIO_MAX732X=y

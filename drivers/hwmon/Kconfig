@@ -1077,6 +1077,12 @@ config SENSORS_LM95245
 	  This driver can also be built as a module.  If so, the module
 	  will be called lm95245.
 
+config SENSORS_MAX77696_ADC
+        bool "Maxim MAX77696 ADC channels"
+        depends on MFD_MAX77696
+        help
+          If you say yes here you get hwmon support for MAX77696 ADC.
+
 config SENSORS_PC87360
 	tristate "National Semiconductor PC87360 family"
 	depends on !PPC

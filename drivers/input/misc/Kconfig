@@ -211,6 +211,13 @@ config INPUT_MAX8997_HAPTIC
 	  To compile this driver as module, choose M here: the
 	  module will be called max8997-haptic.
 
+config INPUT_MAX77696_KEY
+	tristate "MAX77696 KEY support"
+	depends on MFD_MAX77696
+	help
+	  Support the ONKEY of MAX77696 PMICs as an input device
+	  reporting power button status.
+
 config INPUT_MC13783_PWRBUTTON
 	tristate "MC13783 ON buttons"
 	depends on MFD_MC13XXX

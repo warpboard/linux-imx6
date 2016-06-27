@@ -409,6 +409,12 @@ config REGULATOR_MAX77693
 	  and one current regulator 'CHARGER'. This is suitable for
 	  Exynos-4x12 chips.
 
+config REGULATOR_MAX77696
+        bool "Maxim MAX77696 Power Management IC"
+        depends on MFD_MAX77696
+        help
+          Say y here to support the voltage regulaltors of Maxim MAX77696 PMIC.
+
 config REGULATOR_MAX77802
 	tristate "Maxim 77802 regulator"
 	depends on MFD_MAX77686

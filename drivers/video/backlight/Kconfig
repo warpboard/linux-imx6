@@ -283,6 +283,13 @@ config BACKLIGHT_MAX8925
 	  If you have a LCD backlight connected to the WLED output of MAX8925
 	  WLED output, say Y here to enable this driver.
 
+config BACKLIGHT_MAX77696
+	tristate "Backlight driver for MAX77696"
+	depends on MFD_MAX77696
+	help
+	  If you have a LCD backlight connected to the WLED output of MAX77696,
+	  say Y here to enable this driver.
+
 config BACKLIGHT_APPLE
        tristate "Apple Backlight Driver"
        depends on X86 && ACPI

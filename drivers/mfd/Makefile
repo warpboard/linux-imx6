@@ -125,6 +125,13 @@ obj-$(CONFIG_MFD_MAX8925)	+= max8925.o
 obj-$(CONFIG_MFD_MAX8997)	+= max8997.o max8997-irq.o
 obj-$(CONFIG_MFD_MAX8998)	+= max8998.o max8998-irq.o
 
+max77696-io-y			+= max77696-i2c.o
+obj-$(CONFIG_MFD_MAX77696)	+= max77696-io.o
+obj-$(CONFIG_MFD_MAX77696)	+= max77696-core.o
+obj-$(CONFIG_MFD_MAX77696)	+= max77696-irq.o
+obj-$(CONFIG_MFD_MAX77696)	+= max77696-topsys.o
+obj-$(CONFIG_MFD_MAX77696_DBG)	+= max77696-dbg.o
+
 pcf50633-objs			:= pcf50633-core.o pcf50633-irq.o
 obj-$(CONFIG_MFD_PCF50633)	+= pcf50633.o
 obj-$(CONFIG_PCF50633_ADC)	+= pcf50633-adc.o

@@ -380,6 +380,24 @@ config CHARGER_MAX8998
 	  Say Y to enable support for the battery charger control sysfs and
 	  platform data of MAX8998/LP3974 PMICs.
 
+config BATTERY_MAX77696
+	tristate "Maxim MAX77696 Fuel Gauge"
+	depends on MFD_MAX77696
+	help
+	  Say Y to include support for Maxim MAX77696 Fuel Gauge.
+
+config CHARGER_MAX77696
+	tristate "Maxim MAX77696 Charger"
+	depends on MFD_MAX77696
+	help
+	  Say Y to include support for Maxim MAX77696 Main Battery Charger.
+
+config EH_MAX77696
+	tristate "Maxim MAX77696 Energy Harvester"
+	depends on MFD_MAX77696
+	help
+	  Say Y to include support for Maxim MAX77696 Energy Harvester.
+
 config CHARGER_BQ2415X
 	tristate "TI BQ2415x battery charger driver"
 	depends on I2C
