@@ -21,34 +21,27 @@
 /*#include <dt-bindings/interrupt-controller/arm-gic.h>*/
 
 / {
-	maxim_miniq_gpio {
-		gpiocfg1 {
-			reg = <1>; /* GPIO_K2 */
-			cfg = <0>; /* 0=IN, 2=OUT_LO, 3=OUT_HI */
-		};
-	};
-
 	max77696 {
 		compatible = "maxim,max77696";
 		status = "okay";
 		#address-cells = <0>;
 		#size-cells = <0>;
 
-		intb_gpio = <&maxim_miniq_gpio 1/*GPIO_K2*/ 1/*GPIO_ACTIVE_LOW*/>;
-		/*i2c_busnum = <0>;*/ /* comment out for non-static i2c-adapter */
+		intb_gpio = <&gpio3 22 0>;
+		i2c_busnum = <0>; /* comment out for non-static i2c-adapter */
 
 /*******************************************************************************
  * Top Interrupts
  ******************************************************************************/
 
 		topint_irq_trigger	= <2>; /* IRQ_TYPE_EDGE_FALLING */
-		topint_irq_base		= <0>;
+		topint_irq_base		= <250>;
 
 /*******************************************************************************
  * Top System Management
  ******************************************************************************/
 
-		topsys_irq_base		= <0>;
+		topsys_irq_base		= <250>;
 
 /*******************************************************************************
  * GPIOs
@@ -629,7 +622,7 @@
 			compatible = "maxim,max77696-key";
 			status = "okay";
 
-			mrt_sec = <12>;
+			mrt_sec = <2>;
 			keycode_en0 = <116>; /* KEY_POWER */
 			keycode_1sec = <116>; /* KEY_POWER */
 			keycode_mrwrn = <116>; /* KEY_POWER */
