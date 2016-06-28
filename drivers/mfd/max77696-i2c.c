@@ -968,7 +968,7 @@ static __init int max77696_driver_init (void)
     pr_debug(DRIVER_DESC" registered [%d]\n", rc);
     return rc;
 }
-arch_initcall(max77696_driver_init);
+module_init(max77696_driver_init);
 
 #if 0
 static __exit void max77696_driver_exit (void)
