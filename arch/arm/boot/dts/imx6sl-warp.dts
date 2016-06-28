@@ -305,6 +305,11 @@
 			fsl,pins = <
 				MX6SL_PAD_I2C2_SCL__I2C2_SCL 			0x4001a848
 				MX6SL_PAD_I2C2_SDA__I2C2_SDA 			0x4001a848
+			>;
+		};
+
+		pinctrl_edt_ft5x06: edt_ft5x06grp {
+			fsl,pins = <
 				MX6SL_PAD_EPDC_PWRINT__GPIO2_IO12		0x4001a848 // TOUCH_INT
 			>;
 		};
@@ -327,11 +332,13 @@
 	pinctrl-0 = 	<&pinctrl_i2c2>;
 	status = "okay";
 
-	wacom_ts@0a {	
-		compatible = "WAC_I2C_AES,WAC_I2C_TOUCH";
-		reg = <0x0a>;
+	polytouch: edt-ft5x06@38 {
+		compatible = "edt,edt-ft5206", "edt,edt-ft5x06";
+		reg = <0x38>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_edt_ft5x06>;
 		interrupt-parent = <&gpio2>;
 		interrupts = <12 2>;
-		status = "okay";
+		wake-gpios = <&gpio2 12 0>;
 	};
 };
