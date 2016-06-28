@@ -83,6 +83,15 @@
 			      <&gpio4 4 GPIO_ACTIVE_LOW>, 	/* BT_WAKE */
 			      <&gpio4 6 GPIO_ACTIVE_LOW>; 	/* BT_RST_N */
 	};
+
+	pwm4 {
+		compatible = "pwm-backlight";
+		pwms = <&pwm4 0 100>;
+		brightness-levels = <0 4 8 16 32 64 128 255>;
+		default-brightness-level = <6>;
+		status = "okay";
+	};
+
 };
 
 //&epdc {
@@ -311,6 +320,18 @@
 		pinctrl_edt_ft5x06: edt_ft5x06grp {
 			fsl,pins = <
 				MX6SL_PAD_EPDC_PWRINT__GPIO2_IO12		0x4001a848 // TOUCH_INT
+			>;
+		};
+
+		pinctrl_pwm4: pwm4grp {
+			fsl,pins = <
+				MX6SL_PAD_AUD_MCLK__PWM4_OUT 0x4000D9
+			>;
+		};
+
+		pinctrl_pwm4_sleep: pwm4grp-sleep {
+			fsl,pins = <
+				MX6SL_PAD_AUD_MCLK__GPIO1_IO06 0x403080
 			>;
 		};
 	};
