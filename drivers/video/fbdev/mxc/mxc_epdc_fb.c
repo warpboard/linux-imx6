@@ -91,6 +91,7 @@
 
 static unsigned long default_bpp = 16;
 static DEFINE_MUTEX(hard_lock);
+static int max77696_vcom = { -2000000 };
 
 struct update_marker_data {
 	struct list_head full_list;
@@ -1185,6 +1186,9 @@ static void epdc_init_settings(struct mxc_epdc_fb_data *fb_data)
 static void epdc_powerup(struct mxc_epdc_fb_data *fb_data)
 {
 	int ret = 0;
+	int v_target_uV = max77696_vcom;
+	int v_target_uV_max = max77696_vcom;
+
 	mutex_lock(&fb_data->power_mutex);
 
 	/*
@@ -1221,6 +1225,17 @@ static void epdc_powerup(struct mxc_epdc_fb_data *fb_data)
 	clk_prepare_enable(fb_data->epdc_clk_pix);
 
 	__raw_writel(EPDC_CTRL_CLKGATE, EPDC_CTRL_CLEAR);
+
+	/* Set VCOM voltage to the EPD panel */
+	v_target_uV = (50000000-10000)+v_target_uV;
+	v_target_uV_max = v_target_uV+20000;
+	ret = regulator_set_voltage(fb_data->vcom_regulator, v_target_uV, v_target_uV_max);
+	if (IS_ERR((void *)ret)) {
+		dev_err(fb_data->dev, "Unable to set VCOM regulator voltage."
+			"err = 0x%x\n", ret);
+		mutex_unlock(&fb_data->power_mutex);
+		return;
+	}
 
 	/* Enable power to the EPD panel */
 	ret = regulator_enable(fb_data->display_regulator);
@@ -4540,6 +4555,16 @@ int mxc_epdc_fb_probe(struct platform_device *pdev)
 				x_mem_size = memparse(opt + 6, NULL);
 			else if (!strncmp(opt, "tce_prevent", 11))
 				fb_data->tce_prevent = 1;
+			else if (!strncmp(opt, "vcom=", 5)) {
+				int offs = 5;
+				if (opt[5] == '-')
+					offs = 6;
+				ret = strict_strtoul(opt + offs, 0,
+					(long *)&max77696_vcom);
+				if (ret < 0)
+					break;
+				max77696_vcom = -max77696_vcom;
+			}
 			else
 				panel_str = opt;
 		}
