@@ -4925,7 +4925,7 @@ int mxc_epdc_fb_probe(struct platform_device *pdev)
 	fb_data->v3p3_regulator = devm_regulator_get(&pdev->dev, "V3P3");
 	if (IS_ERR(fb_data->v3p3_regulator)) {
 		dev_err(&pdev->dev, "Unable to get V3P3 regulator."
-			"err = 0x%x\n", (int)fb_data->vcom_regulator);
+			"err = 0x%x\n", (int)fb_data->v3p3_regulator);
 		ret = -ENODEV;
 		goto out_dma_work_buf;
 	}
