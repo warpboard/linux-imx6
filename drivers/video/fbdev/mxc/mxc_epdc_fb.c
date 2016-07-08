@@ -4559,7 +4559,7 @@ int mxc_epdc_fb_probe(struct platform_device *pdev)
 				int offs = 5;
 				if (opt[5] == '-')
 					offs = 6;
-				ret = strict_strtoul(opt + offs, 0,
+				ret = kstrtoul(opt + offs, 0,
 					(long *)&max77696_vcom);
 				if (ret < 0)
 					break;
