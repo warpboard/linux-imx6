@@ -65,6 +65,15 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 
+		// Always on supply to EPD panel required for epdc driver
+		v3p3_reg: regulator@0 {
+			compatible = "regulator-fixed";
+			reg = <0>;
+			regulator-name = "V3P3";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+		};
+
 		reg_1p8v: regulator@2 {
 			compatible = "regulator-fixed";
 			reg = <2>;
@@ -94,14 +103,14 @@
 
 };
 
-//&epdc {
-//	pinctrl-names = "default";
-//	pinctrl-0 = <&pinctrl_epdc>;
-//	V3P3-supply = <&pu_dummy>;
-//	VCOM-supply = <&vcom_reg>;
-//	DISPLAY-supply = <&disp_reg>;
-//	status = "okay";
-//};
+&epdc {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_epdc>;
+	V3P3 = <&v3p3_reg>;
+	VCOM = <&vcom_reg>;
+	DISPLAY = <&disp_reg>;
+	status = "okay";
+};
 
 &ecspi3 {
 	fsl,spi-num-chipselects = <2>;
