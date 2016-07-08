@@ -17,7 +17,6 @@ obj-y				+= pwm/
 obj-$(CONFIG_PCI)		+= pci/
 obj-$(CONFIG_PARISC)		+= parisc/
 obj-$(CONFIG_RAPIDIO)		+= rapidio/
-obj-y				+= video/
 obj-y				+= idle/
 
 # IPMI must come before ACPI in order to provide IPMI opregion support
@@ -64,6 +63,10 @@ obj-$(CONFIG_FB_INTEL)          += video/fbdev/intelfb/
 
 obj-$(CONFIG_PARPORT)		+= parport/
 obj-y				+= base/ block/ misc/ mfd/ nfc/
+
+# video comes after regulators and mfd so that epdc power can be handled
+obj-y				+= video/
+
 obj-$(CONFIG_DMA_SHARED_BUFFER) += dma-buf/
 obj-$(CONFIG_NUBUS)		+= nubus/
 obj-y				+= macintosh/
