@@ -398,14 +398,14 @@
 			 * MAX77696_VREG_EPD_VDDH 5
 			 */
 
-			/*disp_reg:*/ epd0@0 {
+			disp_reg: epd0@0 {
 				reg = <0>;
-				regulator-name = "MAX77696-DISP";
+				regulator-name = "DISPLAY";
 			};
 
-			/*vcom_reg:*/ epd1@1 {
+			vcom_reg: epd1@1 {
 				reg = <1>;
-				regulator-name = "MAX77696-VCOM";
+				regulator-name = "VCOM";
 				regulator-min-microvolt = <44941100>; /* 50000000 + -5058900 */
 				regulator-max-microvolt = <50000000>; /* 50000000 +        0 */
 			};
