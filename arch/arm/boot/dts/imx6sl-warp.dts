@@ -103,6 +103,52 @@
 //	status = "okay";
 //};
 
+&ecspi3 {
+	fsl,spi-num-chipselects = <2>;
+	cs-gpios = <&gpio5 13 0
+		    &gpio1 19 0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ecspi3>;
+	status = "okay";
+
+
+	spi2p4-display@0{
+		compatible = "ilitek,ili9341";
+		reg = <0>;
+		status = "okay";
+
+		spi-max-frequency = <32000000>;
+		rotate = <270>;
+		bgr;
+		fps = <30>;
+		buswidth = <8>;
+		reset-gpios = <&gpio1 17 0>;
+		dc-gpios = <&gpio1 20 0>;
+		led-gpios = <&gpio1 22 1>;
+		debug = <0>;
+	};
+
+	rpi-display_ts@1 {
+		compatible = "ti,ads7846";
+		reg = <1>;
+		status = "okay";
+
+		spi-max-frequency = <2000000>;
+		interrupt-parent = <&gpio1>;
+		interrupts = <21 0>;
+		pendown-gpio = <&gpio1 21 1>;
+		ti,swap-xy;
+		ti,vref-mv = <2500>;
+		ti,keep-vref-on;
+		ti,x-min = /bits/ 16 <0>;
+		ti,x-max = /bits/ 16 <3688>;
+		ti,y-min = /bits/ 16 <0>;
+		ti,y-max = /bits/ 16 <4095>;
+		ti,x-plate-ohms = /bits/ 16 <150>;
+		ti,pressure-max = /bits/ 16 <255>;
+	};
+};
+
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
@@ -172,6 +218,20 @@
 
 &iomuxc {
 	imx6sl-warp {
+		pinctrl_ecspi3: ecspi3grp {
+			fsl,pins = <
+				MX6SL_PAD_EPDC_D10__GPIO1_IO17		0x1b0b1 // ILI9341 RESET
+				MX6SL_PAD_EPDC_D13__GPIO1_IO20 		0x1b0b1 // ILI9341 DC
+				MX6SL_PAD_EPDC_D15__GPIO1_IO22		0x1b0b1 // ILI9341 LED_EN
+				MX6SL_PAD_EPDC_D14__GPIO1_IO21		0x1b0b1 // TOUCH INT
+				MX6SL_PAD_EPDC_D12__GPIO1_IO19		0x1b0b1 // TOUCH CS GPIO
+				MX6SL_PAD_SD1_DAT2__GPIO5_IO13		0x1b0b1 // ILI9341 CS GPIO
+				MX6SL_PAD_EPDC_D11__ECSPI3_SCLK		0x1b0b1
+				MX6SL_PAD_EPDC_D8__ECSPI3_MOSI		0x1b0b1
+				MX6SL_PAD_EPDC_D9__ECSPI3_MISO		0x1b0b1
+			>;
+		};
+
 		pinctrl_epdc: epdcgrp {
 			fsl,pins = <
 				MX6SL_PAD_EPDC_D0__EPDC_DATA00	0x1b0B0
