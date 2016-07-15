@@ -273,8 +273,8 @@
 
 		pinctrl_uart3: uart3grp {
 			fsl,pins = <
-				MX6SL_PAD_AUD_RXC__UART3_RX_DATA	0x41b0b1
-				MX6SL_PAD_AUD_RXC__UART3_TX_DATA	0x41b0b1
+				MX6SL_PAD_AUD_RXC__UART3_RX_DATA	0x1b0b1
+				MX6SL_PAD_AUD_RXC__UART3_TX_DATA	0x1b0b1
 			>;
 		};
 
