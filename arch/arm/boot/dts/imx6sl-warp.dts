@@ -122,7 +122,7 @@
 
 
 	spi2p4-display@0{
-		compatible = "ilitek,ili9341";
+		compatible = "ilitek,ili9341_etftm0243";
 		reg = <0>;
 		status = "okay";
 
