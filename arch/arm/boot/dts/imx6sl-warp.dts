@@ -112,6 +112,14 @@
 	status = "okay";
 };
 
+&ecspi2 {
+	fsl,spi-num-chipselects = <1>;
+	cs-gpios = <&gpio4 15 0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ecspi2>;
+	status = "okay";
+};
+
 &ecspi3 {
 	fsl,spi-num-chipselects = <2>;
 	cs-gpios = <&gpio5 13 0
@@ -227,6 +235,18 @@
 
 &iomuxc {
 	imx6sl-warp {
+		pinctrl_ecspi2: ecspi2grp {
+			fsl,pins = <
+				MX6SL_PAD_FEC_RXD1__GPIO4_IO18		0x41b0b1 // ACCL_INT1
+				MX6SL_PAD_FEC_RX_ER__GPIO4_IO19		0x41b0b1 // ACCL_INT2
+				MX6SL_PAD_HSIC_DAT__GPIO3_IO19		0x41b0b1 // FXOS_RESET
+				MX6SL_PAD_ECSPI2_SS0__GPIO4_IO15	0x41b0b1 // FX8700 CS GPIO
+				MX6SL_PAD_ECSPI2_SCLK__ECSPI2_SCLK	0x41b0b1
+				MX6SL_PAD_ECSPI2_MOSI__ECSPI2_MOSI	0x41b0b1
+				MX6SL_PAD_ECSPI2_MISO__ECSPI2_MISO	0x41b0b1
+			>;
+		};
+
 		pinctrl_ecspi3: ecspi3grp {
 			fsl,pins = <
 				MX6SL_PAD_EPDC_D10__GPIO1_IO17		0x1b0b1 // ILI9341 RESET
