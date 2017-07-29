@@ -1083,6 +1083,11 @@ config SENSORS_MAX77696_ADC
         help
           If you say yes here you get hwmon support for MAX77696 ADC.
 
+config SENSORS_FXOS8700_SPI
+        tristate "Freescale FXOS8700 Accelerometer and Magnetometer combo sensor spi driver"
+        depends on SPI
+        default n
+
 config SENSORS_PC87360
 	tristate "National Semiconductor PC87360 family"
 	depends on !PPC
