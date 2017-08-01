@@ -118,6 +118,17 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi2>;
 	status = "okay";
+
+	fxos8700-acc-gyro@0 {
+		compatible = "nxp,fxos8700";
+		reg = <0>;
+		status = "okay";
+
+		spi-max-frequency = <500000>;
+		interrupt-parent = <&gpio4>;
+		interrupts = <18 0>;
+	};
+
 };
 
 &ecspi3 {
